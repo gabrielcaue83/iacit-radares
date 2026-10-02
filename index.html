@@ -1,0 +1,1754 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IACIT Soluções Tecnológicas | Defesa, radares e navegação aérea</title>
+<meta name="description" content="IACIT: Empresa Estratégica de Defesa sediada em São José dos Campos. Sistemas antidrone, radar OTH, CNS/ATM, radares meteorológicos, telemetria e P,D&I com tecnologia nacional.">
+<script>
+(function(){try{var t=localStorage.getItem('iacit-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}document.documentElement.classList.add('js');})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Saira:wdth,wght@75..125,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#EDF1F5;--ground-2:#E1E8EF;--panel:#F7F9FB;
+  --line:rgba(10,30,51,.14);--line-strong:rgba(10,30,51,.34);
+  --text:#0A1E33;--muted:#45596F;--signal:#995800;--on-signal:#FFFFFF;--signal-soft:rgba(153,88,0,.12);
+  --grid:rgba(10,30,51,.055);--sea:#1F5FA8;
+  --display:"Saira","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --nav-h:72px;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#06111D;--ground-2:#0A1A2B;--panel:#0D2136;
+    --line:rgba(200,220,240,.12);--line-strong:rgba(200,220,240,.3);
+    --text:#E7EEF5;--muted:#8FA4BA;--signal:#FFB02E;--on-signal:#06111D;--signal-soft:rgba(255,176,46,.13);
+    --grid:rgba(200,220,240,.045);--sea:#5AA9F5;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#06111D;--ground-2:#0A1A2B;--panel:#0D2136;
+  --line:rgba(200,220,240,.12);--line-strong:rgba(200,220,240,.3);
+  --text:#E7EEF5;--muted:#8FA4BA;--signal:#FFB02E;--on-signal:#06111D;--signal-soft:rgba(255,176,46,.13);
+  --grid:rgba(200,220,240,.045);--sea:#5AA9F5;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:clip;transition:background-color .4s,color .4s}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:96px 96px;-webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 75%)}
+main,footer{position:relative;z-index:1}
+img,svg{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px}
+.wrap{width:min(1240px,100% - 48px);margin-inline:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.02;margin:0;letter-spacing:-.01em}
+p{margin:0}
+.h2{font-size:clamp(2.2rem,5.2vw,4.6rem);font-stretch:112%;line-height:.98;letter-spacing:-.015em}
+.lead{font-size:clamp(1.05rem,1.4vw,1.2rem);color:var(--muted);max-width:56ch}
+.mono{font-family:var(--mono);font-size:.78rem;letter-spacing:.02em}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+.wi{display:inline-block;will-change:transform}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.65em;min-height:50px;padding:0 1.5em;border-radius:999px;font:500 .98rem/1 var(--body);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:background-color .3s,color .3s,border-color .3s;white-space:nowrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn-signal{background:var(--signal);color:var(--on-signal)}
+.btn-signal:hover{background:var(--text);color:var(--ground)}
+.btn-ghost{border-color:var(--line-strong);color:var(--text);background:transparent}
+.btn-ghost:hover{border-color:var(--signal);color:var(--signal)}
+.textlink{display:inline-flex;align-items:center;gap:.5em;color:var(--text);text-decoration:none;font-weight:500;border-bottom:1px solid var(--line-strong);padding-bottom:3px;transition:color .3s,border-color .3s}
+.textlink:hover{color:var(--signal);border-color:var(--signal)}
+.textlink svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Preloader */
+.preloader{position:fixed;inset:0;z-index:200;background:var(--ground);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;clip-path:inset(0 0 0 0)}
+html:not(.js) .preloader{display:none}
+.pre-inner{position:relative;width:132px;height:132px;display:grid;place-items:center}
+.pre-ring{position:absolute;inset:0;width:100%;height:100%}
+.pre-ring circle{fill:none;stroke-width:1.5}
+.pre-ring-track{stroke:var(--line-strong)}
+.pre-ring-progress{stroke:var(--signal);stroke-linecap:round}
+.pre-count{font-family:var(--display);font-stretch:125%;font-size:1.9rem;font-weight:500;font-variant-numeric:tabular-nums}
+.pre-label{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+
+/* Cursor */
+.cursor{position:fixed;left:0;top:0;width:36px;height:36px;margin:-18px 0 0 -18px;pointer-events:none;z-index:150;display:none}
+.cursor.is-on{display:block}
+.cursor-ring{position:absolute;inset:0;border:1px solid var(--signal);border-radius:50%;transition:transform .35s cubic-bezier(.2,.8,.2,1),background-color .35s}
+.cursor-ring::before,.cursor-ring::after{content:"";position:absolute;background:var(--signal)}
+.cursor-ring::before{left:50%;top:-6px;width:1px;height:6px}
+.cursor-ring::after{top:50%;left:-6px;height:1px;width:6px}
+.cursor.is-link .cursor-ring{transform:scale(1.7);background:var(--signal-soft)}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;padding-top:env(safe-area-inset-top,0px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.nav::before{content:"";position:absolute;inset:0;background:var(--ground);opacity:0;border-bottom:1px solid var(--line);transition:opacity .4s}
+@supports (backdrop-filter:blur(10px)){.nav::before{background:color-mix(in srgb,var(--ground) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}}
+.nav.is-scrolled::before{opacity:1}
+.nav.is-hidden{transform:translateY(-110%)}
+.nav-inner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;height:var(--nav-h)}
+.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-stretch:125%;font-weight:600;font-size:1.35rem;letter-spacing:.04em}
+.brand svg{width:30px;height:30px;fill:none;stroke:var(--signal);stroke-width:1.6}
+.nav-links{display:flex;gap:30px}
+.nav-links a{text-decoration:none;font-size:.94rem;color:var(--muted);transition:color .3s;padding:10px 0}
+.nav-links a:hover{color:var(--text)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.theme-toggle{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-strong);background:transparent;color:var(--text);display:grid;place-items:center;cursor:pointer;transition:border-color .3s}
+.theme-toggle:hover{border-color:var(--signal)}
+.theme-toggle svg{width:18px;height:18px}
+.nav .btn{min-height:44px;padding:0 1.2em;font-size:.9rem}
+@media (max-width:899px){.nav-links{display:none}.nav .btn-label-long{display:none}}
+
+/* Hero */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;overflow:hidden;isolation:isolate}
+.radar-wrap{position:absolute;inset:0;z-index:-1;perspective:1400px}
+#radar{display:block;width:100%;height:100%}
+.hero-inner{position:relative;padding-block:calc(var(--nav-h) + 72px) 140px}
+.hero-kicker{display:inline-flex;align-items:center;gap:12px;font-size:.92rem;color:var(--muted);margin-bottom:28px;max-width:44ch}
+.pulse{position:relative;width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:var(--signal)}
+.pulse::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--signal);animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{from{transform:scale(.4);opacity:1}to{transform:scale(1.8);opacity:0}}
+.hero-title{font-size:clamp(3.1rem,8.6vw,8.2rem);font-stretch:118%;font-weight:600;line-height:.9;letter-spacing:-.025em;margin-bottom:34px}
+.hero-title .line{display:block;overflow:hidden;padding-bottom:.06em}
+.hero-title .li{display:block}
+.hero-title .line:last-child .li{color:var(--signal)}
+.hero-lede{font-size:clamp(1.05rem,1.45vw,1.25rem);max-width:50ch;color:var(--muted);margin-bottom:40px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px}
+.hero-readout{position:absolute;right:max(24px,calc((100vw - 1240px)/2));bottom:40px;display:grid;grid-template-columns:auto auto;gap:6px 22px;font-family:var(--mono);font-size:.74rem;color:var(--muted);padding-top:14px;border-top:1px solid var(--line-strong);min-width:260px}
+.hero-readout b{font-weight:500;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+.scroll-cue{position:absolute;left:max(24px,calc((100vw - 1240px)/2));bottom:40px;display:flex;align-items:center;gap:14px;font-size:.84rem;color:var(--muted)}
+.scroll-cue i{display:block;width:1px;height:44px;background:var(--line-strong);position:relative;overflow:hidden}
+.scroll-cue i::after{content:"";position:absolute;left:0;top:-50%;width:1px;height:50%;background:var(--signal);animation:cue 2s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes cue{to{top:110%}}
+@media (max-width:899px){
+  .hero{align-items:flex-end}
+  .hero-inner{padding-block:52vh 120px}
+  .hero-readout{display:none}
+}
+
+/* Manifesto */
+.manifesto{padding-block:clamp(120px,18vh,220px) clamp(80px,12vh,140px)}
+.manifesto-text{font-family:var(--display);font-weight:500;font-size:clamp(1.8rem,4.1vw,3.5rem);line-height:1.1;letter-spacing:-.01em;max-width:30ch}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(64px,10vh,120px)}
+.fact{position:relative;padding:28px 28px 0 0}
+.fact + .fact{padding-left:28px}
+.fact-rule{position:absolute;left:0;right:0;top:0;height:1px;background:var(--line-strong);transform-origin:left}
+.fact + .fact::before{content:"";position:absolute;left:0;top:28px;bottom:0;width:1px;background:var(--line)}
+.fact-val{font-family:var(--display);font-stretch:118%;font-weight:600;font-size:clamp(2rem,3.6vw,3.2rem);line-height:1;margin-bottom:14px}
+.fact p{font-size:.95rem;color:var(--muted);max-width:28ch}
+@media (max-width:899px){.facts{grid-template-columns:1fr 1fr;row-gap:40px}.fact:nth-child(3){padding-left:0}.fact:nth-child(3)::before{display:none}}
+@media (max-width:520px){.facts{grid-template-columns:1fr}.fact,.fact + .fact{padding-left:0}.fact + .fact::before{display:none}}
+
+/* Marquee */
+.marquee{border-block:1px solid var(--line);padding-block:26px;overflow:hidden;white-space:nowrap;position:relative}
+.marquee-label{position:absolute;left:max(24px,calc((100vw - 1240px)/2));top:-11px;background:var(--ground);padding:0 10px;font-size:.8rem;color:var(--muted);z-index:2}
+.marquee-track{display:inline-flex;will-change:transform}
+.marquee-group{display:inline-flex;align-items:center}
+.marquee-item{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:clamp(1.5rem,3.4vw,2.9rem);padding-inline:.55em;line-height:1.1}
+.marquee-item.outline{color:transparent;-webkit-text-stroke:1px var(--muted)}
+.marquee-sep{width:22px;height:22px;flex:0 0 22px;fill:none;stroke:var(--signal);stroke-width:1.6}
+
+/* Markets */
+.markets-head{display:grid;grid-template-columns:1.25fr .75fr;gap:48px;align-items:end;padding-block:clamp(110px,15vh,180px) 56px}
+.markets-pin{position:relative;height:100vh;overflow:hidden}
+.markets-track{display:flex;height:100%;width:max-content;will-change:transform}
+.market{flex:0 0 auto;width:min(90vw,1220px);height:100%;display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(32px,4vw,64px);align-items:center;padding:calc(var(--nav-h) + 36px) clamp(28px,4vw,64px) 84px;border-right:1px solid var(--line)}
+.market:first-child{padding-left:max(24px,calc((100vw - 1240px)/2))}
+.market-visual{margin:0;position:relative;width:100%;max-width:560px;justify-self:center;aspect-ratio:1/1;max-height:calc(100vh - var(--nav-h) - 170px);border:1px solid var(--line);background:var(--ground-2);border-radius:6px;overflow:hidden}
+.market-visual svg{display:block;width:100%;height:100%}
+.market-visual figcaption{position:absolute;left:16px;bottom:12px;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.market-idx{font-family:var(--mono);font-size:.8rem;color:var(--signal);display:block;margin-bottom:14px;font-variant-numeric:tabular-nums}
+.market h3{font-size:clamp(1.8rem,3vw,2.8rem);font-stretch:110%;margin-bottom:16px;max-width:18ch}
+.market-intro{color:var(--muted);font-size:.98rem;margin-bottom:22px;max-width:54ch}
+.specs{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:0}
+.specs li{display:grid;grid-template-columns:minmax(120px,.42fr) 1fr;gap:18px;padding:11px 0;border-top:1px solid var(--line);font-size:.9rem;line-height:1.5}
+.specs li:last-child{border-bottom:1px solid var(--line)}
+.specs strong{font-family:var(--display);font-stretch:108%;font-weight:600;font-size:1rem;line-height:1.3}
+.specs span{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{font-family:var(--mono);font-size:.74rem;padding:6px 11px;border:1px solid var(--line-strong);border-radius:999px;color:var(--text)}
+.market-links{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+.markets-progress{position:absolute;left:max(24px,calc((100vw - 1240px)/2));right:max(24px,calc((100vw - 1240px)/2));bottom:36px;height:1px;background:var(--line);z-index:3}
+.markets-progress span{display:block;height:100%;background:var(--signal);transform-origin:left;transform:scaleX(0)}
+@media (max-width:899px){
+  .markets-head{grid-template-columns:1fr;gap:20px}
+  .markets-pin{height:auto;overflow:visible}
+  .markets-track{flex-direction:column;width:auto}
+  .market,.market:first-child{width:100%;height:auto;grid-template-columns:1fr;padding:56px 24px;border-right:0;border-top:1px solid var(--line)}
+  .market-visual{max-width:380px;max-height:none}
+  .markets-progress{display:none}
+  .specs li{grid-template-columns:1fr;gap:4px}
+}
+@media (min-width:900px) and (max-height:760px){
+  .market-intro{display:none}
+}
+
+/* Visual SVG classes */
+.v-line{fill:none;stroke:var(--line-strong);stroke-width:1}
+.v-faint{fill:none;stroke:var(--line);stroke-width:1}
+.v-dash{fill:none;stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 6}
+.v-accent{fill:none;stroke:var(--signal);stroke-width:1.5;stroke-linecap:round}
+.v-fill{fill:var(--signal-soft);stroke:var(--signal);stroke-width:1}
+.v-solid{fill:var(--signal)}
+.v-ink{fill:none;stroke:var(--text);stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round}
+.v-node{fill:var(--ground-2);stroke:var(--text);stroke-width:1.2}
+.v-text{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.v-text-strong{font-family:var(--mono);font-size:10px;fill:var(--signal)}
+
+/* OTH 3D */
+.oth{position:relative;border-top:1px solid var(--line)}
+.oth3d{position:relative;height:100vh;height:100svh;overflow:hidden}
+#othCanvas,#rmtCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.oth3d-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,var(--ground) 0%,var(--ground) 16%,transparent 50%)}
+.oth3d-labels{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.o3l{position:absolute;left:0;top:0;font-family:var(--mono);font-size:.72rem;line-height:1.2;color:var(--muted);white-space:nowrap;opacity:0;will-change:transform,opacity}
+.o3l.is-signal{color:var(--signal)}
+.o3l.is-strong{color:var(--text)}
+.oth3d-ui{position:relative;z-index:2;height:100%;display:flex;align-items:center;pointer-events:none}
+.oth3d-copy{pointer-events:auto;width:min(430px,100%);padding-top:var(--nav-h)}
+.oth3d-copy .tagline{font-size:.92rem;color:var(--signal);margin-bottom:16px;display:block;font-weight:500}
+.oth3d-copy .h2{font-size:clamp(2.2rem,4.2vw,3.8rem);margin-bottom:26px}
+.oth-steps{position:relative;min-height:200px;margin-bottom:22px}
+.oth-step{position:absolute;left:0;right:0;top:0}
+.oth-step .mono{color:var(--signal);display:block;margin-bottom:8px}
+.oth-step h3{font-size:clamp(1.25rem,1.8vw,1.55rem);font-stretch:106%;margin-bottom:10px}
+.oth-step p{color:var(--muted);font-size:.97rem}
+.oth-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 0 26px;border-top:1px solid var(--line-strong)}
+.oth-stats div{padding:14px 12px 0 0}
+.oth-stats div + div{padding-left:12px;border-left:1px solid var(--line)}
+.oth-stats dt{font-size:.78rem;color:var(--muted);margin-bottom:6px;line-height:1.35}
+.oth-stats dd{margin:0;font-family:var(--display);font-stretch:118%;font-weight:600;font-size:clamp(1.5rem,2.4vw,2.2rem);line-height:1;font-variant-numeric:tabular-nums}
+.oth-stats dd small{font-size:.5em;font-weight:500;margin-left:.2em;color:var(--muted)}
+.oth3d-rail{position:absolute;z-index:2;right:max(24px,calc((100vw - 1240px)/2));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
+.oth3d-rail span{display:block;width:2px;height:40px;background:var(--line-strong);position:relative;overflow:hidden}
+.oth3d-rail i{position:absolute;inset:0;background:var(--signal);transform:scaleY(0);transform-origin:top}
+.oth-legend{position:absolute;z-index:2;right:max(24px,calc((100vw - 1240px)/2));bottom:32px;display:flex;flex-wrap:wrap;gap:18px;font-size:.8rem;color:var(--muted)}
+.oth-legend span{display:inline-flex;align-items:center;gap:8px}
+.oth-legend svg{width:16px;height:16px}
+.ship-ais{fill:var(--text)}
+.ship-ghost{fill:none;stroke:var(--signal);stroke-width:1.6}
+.no-3d .oth3d,.oth-static .oth3d{height:auto;min-height:100vh}
+.no-3d .oth3d-ui,.oth-static .oth3d-ui{padding-block:96px}
+.no-3d .oth-steps,.oth-static .oth-steps{min-height:0}
+.no-3d .oth-step,.oth-static .oth-step{position:static;margin-bottom:22px}
+.no-3d #othCanvas,.no-3d #rmtCanvas,.no-3d .oth3d-scrim,.no-3d .oth3d-rail,.no-3d .oth-legend,.oth-static .oth3d-rail{display:none}
+@media (max-width:899px){
+  .oth3d-scrim{background:linear-gradient(0deg,var(--ground) 0%,var(--ground) 44%,transparent 70%)}
+  .oth3d-ui{align-items:flex-end}
+  .oth3d-copy{padding:0 0 24px}
+  .oth3d-copy .tagline{margin-bottom:8px}
+  .oth3d-copy .h2{font-size:2rem;margin-bottom:14px}
+  .oth-steps{min-height:150px;margin-bottom:14px}
+  .oth-step h3{font-size:1.15rem;margin-bottom:6px}
+  .oth-step p{font-size:.88rem;line-height:1.5}
+  .oth-stats{margin-bottom:18px}
+  .oth-stats dd{font-size:1.35rem}
+  .oth3d-rail,.oth-legend{display:none}
+}
+
+.oth3d.is-right .oth3d-scrim{background:linear-gradient(270deg,var(--ground) 0%,var(--ground) 16%,transparent 50%)}
+.oth3d.is-right .oth3d-ui{justify-content:flex-end}
+.oth3d.is-right .oth3d-rail,.oth3d.is-right .oth-legend{right:auto;left:max(24px,calc((100vw - 1240px)/2))}
+.oth-legend .sw{display:inline-block;width:10px;height:10px;border-radius:50%}
+.oth3d-copy .market-links{gap:18px}
+@media (max-width:899px){.oth3d.is-right .oth3d-scrim{background:linear-gradient(0deg,var(--ground) 0%,var(--ground) 44%,transparent 70%)}.oth3d.is-right .oth3d-ui{justify-content:flex-start}}
+
+/* Products index */
+.portfolio{padding-block:clamp(110px,15vh,180px)}
+.portfolio-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:48px}
+.pfilter{display:flex;flex-wrap:wrap;gap:8px}
+.pfilter button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--muted);font:500 .9rem/1 var(--body);cursor:pointer;transition:all .3s}
+.pfilter button:hover{color:var(--text);border-color:var(--text)}
+.pfilter button[aria-pressed="true"]{background:var(--text);color:var(--ground);border-color:var(--text)}
+.plist{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-strong)}
+.prow.is-hidden{display:none}
+.prow a{position:relative;display:grid;grid-template-columns:minmax(200px,1fr) 1.6fr 180px 32px;gap:24px;align-items:center;padding:22px 12px;border-bottom:1px solid var(--line);text-decoration:none;isolation:isolate;overflow:hidden}
+.prow a::before{content:"";position:absolute;inset:0;background:var(--panel);transform:scaleY(0);transform-origin:bottom;transition:transform .45s cubic-bezier(.2,.8,.2,1);z-index:-1}
+.prow a:hover::before,.prow a:focus-visible::before{transform:scaleY(1)}
+.pcode{font-family:var(--display);font-stretch:112%;font-weight:600;font-size:clamp(1.25rem,2.1vw,1.85rem);line-height:1.1;transition:transform .45s cubic-bezier(.2,.8,.2,1),color .3s}
+.prow a:hover .pcode{transform:translateX(10px);color:var(--signal)}
+.pname{color:var(--muted);font-size:.98rem}
+.pcat{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.parrow{width:22px;height:22px;fill:none;stroke:var(--text);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.2,.8,.2,1),stroke .3s}
+.prow a:hover .parrow{transform:rotate(45deg);stroke:var(--signal)}
+.pdesc{display:none}
+.ppreview{position:fixed;left:0;top:0;z-index:70;width:320px;padding:22px 22px 20px;background:var(--panel);border:1px solid var(--line-strong);border-radius:6px;pointer-events:none;visibility:hidden;opacity:0;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
+.ppreview .pv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ppreview .pv-cat{font-family:var(--mono);font-size:.72rem;color:var(--signal)}
+.ppreview .pv-scope{width:34px;height:34px}
+.ppreview .pv-code{font-family:var(--display);font-stretch:115%;font-weight:600;font-size:1.5rem;line-height:1.05;margin-bottom:10px}
+.ppreview .pv-desc{font-size:.9rem;color:var(--muted);line-height:1.5}
+@media (max-width:899px){
+  .prow a{grid-template-columns:1fr 28px;gap:6px 16px;padding:20px 4px}
+  .pcode{grid-column:1}
+  .parrow{grid-column:2;grid-row:1}
+  .pname{grid-column:1 / -1}
+  .pdesc{display:block;grid-column:1 / -1;font-size:.88rem;color:var(--muted)}
+  .pcat{grid-column:1 / -1}
+}
+
+/* Edge */
+.edge{padding-block:clamp(110px,15vh,180px);border-top:1px solid var(--line)}
+.edge-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,6vw,96px);align-items:start}
+.edge-head{position:sticky;top:calc(var(--nav-h) + 48px)}
+.edge-head .h2{margin-bottom:24px}
+.edge-head .lead{margin-bottom:32px}
+.edge-list{list-style:none;margin:0;padding:0}
+.edge-item{position:relative;display:grid;grid-template-columns:56px 1fr;gap:24px;padding:36px 0}
+.edge-rule{position:absolute;left:0;right:0;top:0;height:1px;background:var(--line-strong);transform-origin:left}
+.edge-item:last-child{border-bottom:1px solid var(--line)}
+.edge-icon{width:48px;height:48px;fill:none;stroke:var(--signal);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.edge-item h3{font-size:clamp(1.35rem,2.1vw,1.85rem);font-stretch:108%;margin-bottom:10px}
+.edge-item p{color:var(--muted);max-width:52ch}
+@media (max-width:899px){.edge-grid{grid-template-columns:1fr}.edge-head{position:static}.edge-item{grid-template-columns:44px 1fr;gap:18px}.edge-icon{width:40px;height:40px}}
+
+/* Timeline */
+.journey{padding-block:clamp(110px,15vh,180px);border-top:1px solid var(--line)}
+.journey-head{margin-bottom:clamp(48px,8vh,96px);display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end}
+.journey-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,80px);align-items:start}
+.tl-sticky{position:sticky;top:calc(var(--nav-h) + 40px)}
+.tl-year{font-family:var(--display);font-stretch:125%;font-weight:600;font-size:clamp(4.5rem,13vw,12rem);line-height:.85;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--signal)}
+.tl-caption{margin-top:18px;color:var(--muted);font-size:.95rem}
+.tl-list{position:relative;list-style:none;margin:0;padding:0 0 0 32px}
+.tl-progress{position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--line)}
+.tl-progress span{display:block;width:100%;height:100%;background:var(--signal);transform-origin:top;transform:scaleY(0)}
+.tl-item{position:relative;padding:4vh 0 9vh;opacity:.4;transition:opacity .5s}
+.tl-item.is-active{opacity:1}
+.tl-item::before{content:"";position:absolute;left:-36px;top:calc(4vh + 10px);width:9px;height:9px;border-radius:50%;background:var(--ground);border:1px solid var(--line-strong);transition:background-color .4s,border-color .4s}
+.tl-item.is-active::before{background:var(--signal);border-color:var(--signal)}
+.tl-item .mono{color:var(--signal);display:block;margin-bottom:8px}
+.tl-item h3{font-size:clamp(1.3rem,2vw,1.75rem);font-stretch:106%;margin-bottom:10px}
+.tl-item p{color:var(--muted);max-width:50ch}
+@media (max-width:899px){
+  .journey-head{grid-template-columns:1fr}
+  .journey-grid{grid-template-columns:1fr}
+  .tl-sticky{top:var(--nav-h);z-index:2;background:var(--ground);padding:12px 0 14px;border-bottom:1px solid var(--line)}
+  .tl-year{font-size:3.6rem}
+  .tl-caption{display:none}
+}
+
+/* CTA */
+.cta{padding-block:clamp(110px,16vh,200px) clamp(80px,10vh,120px);border-top:1px solid var(--line);position:relative;overflow:hidden}
+.cta-title{font-size:clamp(2.6rem,7vw,6.4rem);font-stretch:116%;line-height:.94;letter-spacing:-.025em;max-width:14ch;margin-bottom:clamp(48px,8vh,88px)}
+.cta-rows{border-bottom:1px solid var(--line-strong)}
+.cta-row{position:relative;display:grid;grid-template-columns:1fr 1fr 64px;gap:24px;align-items:center;padding:30px 0;border-top:1px solid var(--line-strong);text-decoration:none}
+.cta-row h3{font-size:clamp(1.6rem,3.4vw,2.9rem);font-stretch:110%;transition:transform .5s cubic-bezier(.2,.8,.2,1),color .3s}
+.cta-row p{color:var(--muted);max-width:42ch}
+.cta-arrow{width:64px;height:64px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;transition:background-color .35s,border-color .35s}
+.cta-arrow svg{width:22px;height:22px;fill:none;stroke:var(--text);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.2,.8,.2,1),stroke .3s}
+.cta-row:hover h3,.cta-row:focus-visible h3{transform:translateX(14px);color:var(--signal)}
+.cta-row:hover .cta-arrow{background:var(--signal);border-color:var(--signal)}
+.cta-row:hover .cta-arrow svg{stroke:var(--on-signal);transform:rotate(45deg)}
+.cta-direct{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:56px}
+.cta-direct dt{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.cta-direct dd{margin:0;font-size:1.02rem}
+.cta-direct a{text-decoration:none;border-bottom:1px solid var(--line-strong)}
+.cta-direct a:hover{color:var(--signal);border-color:var(--signal)}
+@media (max-width:899px){.cta-row{grid-template-columns:1fr 52px;gap:10px 16px}.cta-row p{grid-column:1;grid-row:2}.cta-arrow{grid-column:2;grid-row:1 / span 2;width:52px;height:52px}.cta-direct{grid-template-columns:1fr}}
+
+/* Footer */
+.footer{border-top:1px solid var(--line);padding-block:56px 32px;overflow:hidden}
+.footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:32px;margin-bottom:40px}
+.footer-motto{font-family:var(--display);font-stretch:110%;font-size:1.3rem;font-weight:500;max-width:22ch}
+.footer-links{display:flex;flex-wrap:wrap;gap:12px 28px;list-style:none;margin:0;padding:0}
+.footer-links a{text-decoration:none;color:var(--muted);font-size:.94rem;padding:8px 0;display:inline-block}
+.footer-links a:hover{color:var(--signal)}
+.fw{display:flex;justify-content:space-between;font-family:var(--display);font-stretch:125%;font-weight:600;font-size:clamp(5rem,23vw,21rem);line-height:.8;letter-spacing:-.02em;overflow:hidden;padding-bottom:.04em;color:var(--text)}
+.fw span{display:inline-block}
+.footer-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:28px;font-size:.82rem;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){
+  .pulse::after,.scroll-cue i::after{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <svg class="pre-ring" viewBox="0 0 100 100"><circle class="pre-ring-track" cx="50" cy="50" r="46"/><circle class="pre-ring-progress" cx="50" cy="50" r="46" transform="rotate(-90 50 50)"/></svg>
+    <div class="pre-count">000</div>
+  </div>
+  <p class="pre-label">Calibrando sensores</p>
+</div>
+
+<div class="cursor" aria-hidden="true"><span class="cursor-ring"></span></div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="IACIT, voltar ao início">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13"/><circle cx="16" cy="16" r="7" opacity=".55"/><path d="M16 16 L26 7"/><circle cx="16" cy="16" r="1.6" fill="currentColor" stroke="none" style="fill:var(--signal)"/></svg>
+      <span>IACIT</span>
+    </a>
+    <nav class="nav-links" aria-label="Seções da página">
+      <a href="#mercados">Mercados</a>
+      <a href="#oth">Radar OTH</a>
+      <a href="#rmt">Radar RMT</a>
+      <a href="#produtos">Produtos</a>
+      <a href="#diferenciais">Diferenciais</a>
+      <a href="#trajetoria">Trajetória</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema claro e escuro">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+      </button>
+      <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Agendar<span class="btn-label-long">&nbsp;reunião</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="radar-wrap" id="radarWrap"><canvas id="radar" aria-hidden="true"></canvas></div>
+    <div class="wrap hero-inner">
+      <p class="hero-kicker"><span class="pulse" aria-hidden="true"></span><span class="kicker-text">Credenciada pelo Ministério da Defesa como Empresa Estratégica de Defesa</span></p>
+      <h1 class="hero-title" id="heroTitle">
+        <span class="line"><span class="li">Tecnologia</span></span>
+        <span class="line"><span class="li">que guarda</span></span>
+        <span class="line"><span class="li">o Brasil.</span></span>
+      </h1>
+      <p class="hero-lede">Há 40 anos, a IACIT projeta, fabrica e integra em São José dos Campos sistemas de radar, defesa, navegação aérea e meteorologia. Tecnologia nacional a serviço da soberania do país.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar demonstração
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+        <a class="btn btn-ghost magnetic" href="#mercados">Explorar soluções</a>
+      </div>
+    </div>
+    <div class="hero-readout" aria-hidden="true">
+      <span>Sede</span><b>23°10′S 45°53′O</b>
+      <span>Azimute de varredura</span><b id="roAz">000°</b>
+      <span>Alvos em acompanhamento</span><b id="roTracks">00</b>
+      <span>Alcance OTH 0100</span><b>200 MN</b>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><i></i>Role para explorar</div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" id="sobre" aria-label="Sobre a IACIT">
+    <div class="wrap">
+      <p class="manifesto-text" data-scrub-words>Desde 1986, transformamos conhecimento técnico em produtos exclusivos e reconhecidos internacionalmente, para que o Brasil domine as tecnologias que protegem o seu céu, o seu mar e o seu território.</p>
+      <div class="facts">
+        <div class="fact"><span class="fact-rule"></span><div class="fact-val">1986</div><p>Fundada em São José dos Campos, um dos principais polos tecnológicos do país.</p></div>
+        <div class="fact"><span class="fact-rule"></span><div class="fact-val">EED</div><p>Empresa Estratégica de Defesa certificada desde 2013, com produtos classificados como PED.</p></div>
+        <div class="fact"><span class="fact-rule"></span><div class="fact-val">CMMI 3</div><p>Maturidade de processos de engenharia de software certificada (v2.0) em 2019.</p></div>
+        <div class="fact"><span class="fact-rule"></span><div class="fact-val">Finep</div><p>Prêmio Finep de Inovação 2012, categoria Média Empresa Inovadora Nacional.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-label="Projetos para Força Aérea Brasileira, Exército Brasileiro, Marinha do Brasil, DECEA, Cemaden e setor privado">
+    <span class="marquee-label">Projetos críticos para</span>
+    <div class="marquee-track" aria-hidden="true">
+      <div class="marquee-group">
+        <span class="marquee-item">Força Aérea Brasileira</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">Exército Brasileiro</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item">Marinha do Brasil</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">DECEA</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item">Cemaden</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">Setor privado</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+      </div>
+      <div class="marquee-group">
+        <span class="marquee-item">Força Aérea Brasileira</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">Exército Brasileiro</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item">Marinha do Brasil</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">DECEA</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item">Cemaden</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+        <span class="marquee-item outline">Setor privado</span><svg class="marquee-sep" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 19 5"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETS -->
+  <section class="markets" id="mercados" aria-labelledby="marketsTitle">
+    <div class="wrap markets-head">
+      <h2 class="h2" id="marketsTitle" data-split>Quatro frentes, uma missão: autonomia tecnológica.</h2>
+      <p class="lead" data-fade>Do espaço aéreo à Amazônia Azul, a IACIT desenvolve sistemas completos, do sensor ao software, para Forças Armadas, órgãos de controle e empresas privadas.</p>
+    </div>
+    <div class="markets-pin">
+      <div class="markets-track">
+
+        <!-- 1 Defesa -->
+        <article class="market" aria-labelledby="m1">
+          <figure class="market-visual" data-visual="def">
+            <svg viewBox="0 0 400 400" id="vDef" aria-hidden="true">
+              <defs>
+                <g id="droneGlyph"><rect x="-4" y="-4" width="8" height="8" class="v-ink"/><path d="M-4 -4 L-11 -11 M4 -4 L11 -11 M-4 4 L-11 11 M4 4 L11 11" class="v-ink"/><circle cx="-11" cy="-11" r="5" class="v-ink"/><circle cx="11" cy="-11" r="5" class="v-ink"/><circle cx="-11" cy="11" r="5" class="v-ink"/><circle cx="11" cy="11" r="5" class="v-ink"/></g>
+              </defs>
+              <circle cx="200" cy="250" r="175" class="v-dash"/>
+              <text x="200" y="70" text-anchor="middle" class="v-text">Perímetro protegido</text>
+              <g id="vDefWaves">
+                <circle cx="200" cy="250" r="20" class="v-accent wave"/>
+                <circle cx="200" cy="250" r="20" class="v-accent wave"/>
+                <circle cx="200" cy="250" r="20" class="v-accent wave"/>
+                <circle cx="200" cy="250" r="20" class="v-accent wave"/>
+              </g>
+              <path d="M200 250 V330 M184 330 H216 M192 330 L200 300 L208 330 M188 262 L200 250 L212 262" class="v-ink"/>
+              <circle cx="200" cy="250" r="5" class="v-solid"/>
+              <g class="drone" transform="translate(110 140)"><use href="#droneGlyph"/></g>
+              <g class="drone" transform="translate(290 128)"><use href="#droneGlyph"/></g>
+              <g class="drone" transform="translate(320 220)"><use href="#droneGlyph"/></g>
+              <g class="drone" transform="translate(86 230)"><use href="#droneGlyph"/></g>
+              <g class="drone drone-target" transform="translate(206 112)"><use href="#droneGlyph"/></g>
+              <g class="lock" transform="translate(206 112)"><path d="M-24 -14 V-24 H-14 M14 -24 H24 V-14 M24 14 V24 H14 M-14 24 H-24 V14" class="v-accent"/><text x="30" y="-18" class="v-text-strong">Bloqueio RF</text></g>
+            </svg>
+            <figcaption>Bloqueio simultâneo de enxames de drones</figcaption>
+          </figure>
+          <div class="market-body">
+            <span class="market-idx">01 / 04</span>
+            <h3 id="m1">Defesa e Segurança Pública</h3>
+            <p class="market-intro">Portfólio alinhado às necessidades da Aeronáutica, do Exército e da Marinha, com soluções que também atendem o mercado civil. Diversos produtos IACIT têm a chancela de Produto Estratégico de Defesa (PED).</p>
+            <ul class="specs">
+              <li><strong>DRONEBlocker</strong><span>Sistema antidrone que bloqueia vários drones ao mesmo tempo, inclusive enxames. Versões 0100 (militar) e 0200 (civil), integráveis a câmeras, sensores de RF, acústicos e radares.</span></li>
+              <li><strong>Radar OTH 0100</strong><span>Vigilância marítima além do horizonte: rastreia embarcações não cooperativas a até 200 milhas náuticas da costa.</span></li>
+              <li><strong>Guerra Eletrônica</strong><span>Família de contramedidas eletrônicas, da proteção contra drones não autorizados à proteção anti-RCIED.</span></li>
+              <li><strong>VIMTRAH</strong><span>Vigilância Integrada Marítima em Tempo Real para consciência situacional no mar.</span></li>
+            </ul>
+            <div class="market-links">
+              <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar demonstração</a>
+              <a class="textlink" href="https://www.iacit.com.br/mercados/defesa-e-seguranca-publica" target="_blank" rel="noopener">Ver no site oficial <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2 CNS/ATM -->
+        <article class="market" aria-labelledby="m2">
+          <figure class="market-visual" data-visual="atm">
+            <svg viewBox="0 0 400 400" id="vAtm" aria-hidden="true">
+              <circle cx="200" cy="200" r="150" class="v-line"/>
+              <circle cx="200" cy="200" r="100" class="v-faint"/>
+              <circle cx="200" cy="200" r="50" class="v-faint"/>
+              <g id="vAtmTicks"></g>
+              <g id="vAtmPulses"><circle cx="200" cy="200" r="6" class="v-accent pulse-c"/><circle cx="200" cy="200" r="6" class="v-accent pulse-c"/></g>
+              <line id="vAtmRadial" x1="200" y1="200" x2="200" y2="52" class="v-accent"/>
+              <path id="vAtmPath" d="M24 330 C110 318 150 150 236 128 S352 150 384 58" class="v-dash"/>
+              <g id="vAtmPlane"><path d="M-9 -6 L10 0 L-9 6 L-5 0 Z" class="v-solid"/></g>
+              <circle cx="200" cy="200" r="5" class="v-solid"/>
+              <text x="214" y="196" class="v-text-strong">VOR / DME</text>
+            </svg>
+            <figcaption>Radial VOR e distância DME em tempo real</figcaption>
+          </figure>
+          <div class="market-body">
+            <span class="market-idx">02 / 04</span>
+            <h3 id="m2">Auxílio e Controle do Tráfego Aéreo e Marítimo</h3>
+            <p class="market-intro">Sistemas de comunicação, navegação e vigilância (CNS/ATM) desenvolvidos, fabricados e instalados pela IACIT. A empresa integra fóruns como GREPECAS, IGWG e o Comitê Técnico SWIM do DECEA.</p>
+            <ul class="specs">
+              <li><strong>DME 0200</strong><span>Primeiro DME integrado à rede DME/DME do DECEA: apoia a Navegação Baseada em Performance (PBN) e serve de backup à navegação GPS.</span></li>
+              <li><strong>VOR 0100</strong><span>Radiofarol omnidirecional VHF para auxílio à navegação, nas versões fixa e transportável.</span></li>
+              <li><strong>GBAS 0100 CAT 1</strong><span>Sistema de aumentação baseado em solo, tecnologia exclusiva no Brasil.</span></li>
+              <li><strong>TEND-MET e STSC</strong><span>Softwares com redes neurais que antecipam teto, visibilidade e vento em aeródromos e monitoram tempo severo em rota.</span></li>
+            </ul>
+            <div class="chips"><span class="chip">NDB 0200</span><span class="chip">VHF-AM</span><span class="chip">RCS 0400</span><span class="chip">MUST</span></div>
+            <div class="market-links">
+              <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Falar com especialista</a>
+              <a class="textlink" href="https://www.iacit.com.br/produtos/cnsatm" target="_blank" rel="noopener">Ver no site oficial <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3 Meteo -->
+        <article class="market" aria-labelledby="m3">
+          <figure class="market-visual" data-visual="met">
+            <svg viewBox="0 0 400 400" id="vMet" aria-hidden="true">
+              <circle cx="200" cy="200" r="160" class="v-line"/>
+              <circle cx="200" cy="200" r="107" class="v-faint"/>
+              <circle cx="200" cy="200" r="53" class="v-faint"/>
+              <path d="M40 200 H360 M200 40 V360" class="v-faint"/>
+              <g id="vMetCell">
+                <path d="M210 120 C230 80 300 78 320 112 C340 146 318 196 280 205 C240 214 200 190 196 160 C193 140 200 132 210 120 Z" class="v-faint" style="stroke:var(--signal);opacity:.5"/>
+                <path d="M232 128 C246 104 292 104 302 128 C312 152 296 182 270 186 C244 190 222 170 222 152 C222 142 226 136 232 128 Z" class="v-fill" style="opacity:.75"/>
+                <path d="M252 138 C260 126 282 126 288 140 C294 154 284 168 270 170 C256 172 246 160 246 150 C246 146 248 142 252 138 Z" class="v-fill"/>
+              </g>
+              <g id="vMetCell2" transform="translate(-150 120) scale(.6)">
+                <path d="M210 120 C230 80 300 78 320 112 C340 146 318 196 280 205 C240 214 200 190 196 160 C193 140 200 132 210 120 Z" class="v-faint" style="stroke:var(--signal);opacity:.5"/>
+                <path d="M232 128 C246 104 292 104 302 128 C312 152 296 182 270 186 C244 190 222 170 222 152 C222 142 226 136 232 128 Z" class="v-fill" style="opacity:.6"/>
+              </g>
+              <g id="vMetSweep"><path d="M200 200 L200 40 A160 160 0 0 1 280 61 Z" class="v-fill" style="stroke:none;opacity:.6"/><line x1="200" y1="200" x2="200" y2="40" class="v-accent"/></g>
+              <circle cx="200" cy="200" r="5" class="v-solid"/>
+              <g transform="translate(330 330)"><path d="M-16 0 H16 M10 -6 L16 0 L10 6 M0 -16 V16 M-6 -10 L0 -16 L6 -10" class="v-ink"/><text x="20" y="4" class="v-text">H</text><text x="-4" y="-22" class="v-text">V</text></g>
+              <text x="40" y="380" class="v-text">Raio de até 600 km</text>
+            </svg>
+            <figcaption>Dupla polarização: classificação de hidrometeoros</figcaption>
+          </figure>
+          <div class="market-body">
+            <span class="market-idx">03 / 04</span>
+            <h3 id="m3">Meteorologia e Radares</h3>
+            <p class="market-intro">Desde 2008, soluções meteorológicas para controle de tráfego aéreo, defesa civil, agricultura, gestão de recursos hídricos e centros de pesquisa.</p>
+            <ul class="specs">
+              <li><strong>RMT 0200</strong><span>Radar meteorológico banda S de dupla polarização em estado sólido, o primeiro do tipo fabricado no país. Monitora um raio de até 600 km e classifica chuva, granizo e gelo.</span></li>
+              <li><strong>RADH 0200</strong><span>Radar oceânico que mapeia correntes marítimas, detecta fenômenos como tornados e tsunamis e reforça a vigilância costeira.</span></li>
+              <li><strong>Meteodrone</strong><span>Coleta de dados atmosféricos precisos nos ambientes mais desafiadores.</span></li>
+              <li><strong>Previsão e alerta</strong><span>Nowcast, NeuralCAST e RouteCAST: softwares de alerta, prevenção e previsão para decisões em tempo hábil.</span></li>
+            </ul>
+            <div class="chips"><span class="chip">Banda S Doppler</span><span class="chip">Rádio definido por software</span><span class="chip">NLFM</span></div>
+            <div class="market-links">
+              <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar demonstração</a>
+              <a class="textlink" href="https://www.iacit.com.br/produtos/meteorologia" target="_blank" rel="noopener">Ver no site oficial <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4 Telemetria / PD&I / Software -->
+        <article class="market" aria-labelledby="m4">
+          <figure class="market-visual" data-visual="tel">
+            <svg viewBox="0 0 400 400" id="vTel" aria-hidden="true">
+              <circle cx="200" cy="200" r="165" class="v-dash"/>
+              <g id="vTelEdges"></g>
+              <g id="vTelPackets"></g>
+              <g id="vTelNodes"></g>
+              <circle cx="200" cy="200" r="30" class="v-accent" id="vTelHalo"/>
+              <rect x="186" y="186" width="28" height="28" rx="3" class="v-node" style="stroke:var(--signal)"/>
+              <path d="M192 196 H208 M192 200 H208 M192 204 H202" class="v-ink" style="stroke-width:1"/>
+            </svg>
+            <figcaption>Telemetria e controle remoto de sítios isolados</figcaption>
+          </figure>
+          <div class="market-body">
+            <span class="market-idx">04 / 04</span>
+            <h3 id="m4">Telemetria, P,D&amp;I e Engenharia de Software</h3>
+            <p class="market-intro">Da pesquisa aplicada à fábrica de software, a IACIT domina o ciclo completo de sistemas críticos: concepção, desenvolvimento, produção e operação.</p>
+            <ul class="specs">
+              <li><strong>RCS 0400</strong><span>Telemetria e controle remoto em tempo real de auxílios à navegação, energia, abrigos, redes e radares, com histórico, alarmes e relatórios gerenciais.</span></li>
+              <li><strong>P,D&amp;I</strong><span>Departamento de Pesquisa, Desenvolvimento &amp; Inovação desde 2008, com unidade fabril própria em São José dos Campos.</span></li>
+              <li><strong>Fábrica de Software</strong><span>Processos certificados CMMI nível 3 (v2.0) e sistemas como o SGTAN, de gestão de tarifas de navegação aérea para a FAB.</span></li>
+              <li><strong>IA aplicada</strong><span>Redes neurais artificiais em softwares de meteorologia e apoio à navegação aérea.</span></li>
+            </ul>
+            <div class="market-links">
+              <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Discutir um projeto</a>
+              <a class="textlink" href="https://www.iacit.com.br/mercados/telemetria" target="_blank" rel="noopener">Ver no site oficial <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+      <div class="markets-progress" aria-hidden="true"><span></span></div>
+    </div>
+  </section>
+
+  <!-- OTH (3D) -->
+  <section class="oth" id="oth" aria-labelledby="othTitle">
+    <div class="oth3d" id="oth3d">
+      <canvas id="othCanvas" aria-hidden="true"></canvas>
+      <div class="oth3d-scrim" aria-hidden="true"></div>
+      <div class="oth3d-labels" id="othLabels" aria-hidden="true"></div>
+      <div class="wrap oth3d-ui">
+        <div class="oth3d-copy">
+          <span class="tagline">Radar OTH 0100</span>
+          <h2 class="h2" id="othTitle" data-split>Enxergar além do horizonte.</h2>
+          <div class="oth-steps">
+            <div class="oth-step"><span class="mono">01 / 04</span><h3>Farol de Albardão, Rio Grande do Sul</h3><p>Primeiro radar além do horizonte desenvolvido, instalado e em operação na América do Sul. Transmissão e recepção ficam no mesmo local, com um arranjo circular de antenas.</p></div>
+            <div class="oth-step"><span class="mono">02 / 04</span><h3>Um setor de 120° sobre o Atlântico</h3><p>Cada radar cobre mais de 143 mil km² da Zona Econômica Exclusiva, parte dos 3,5 milhões de km² de mar sob jurisdição brasileira.</p></div>
+            <div class="oth-step"><span class="mono">03 / 04</span><h3>Além da curvatura da Terra</h3><p>Radares convencionais enxergam em linha reta e perdem a superfície do mar no horizonte. O OTH 0100 detecta alvos além dele, até 200 milhas náuticas da costa.</p></div>
+            <div class="oth-step"><span class="mono">04 / 04</span><h3>Navios-fantasmas à vista</h3><p>Embarcações que não transmitem AIS aparecem com posição e deslocamento, apoiando o combate à pirataria, ao contrabando, ao tráfico e aos crimes ambientais.</p></div>
+          </div>
+          <dl class="oth-stats">
+            <div><dt>Alcance de detecção</dt><dd><span class="num" data-to="200">0</span><small>MN</small></dd></div>
+            <div><dt>Abertura de transmissão</dt><dd><span class="num" data-to="120">0</span><small>graus</small></dd></div>
+            <div><dt>Área por radar</dt><dd><span class="num" data-to="143">0</span><small>mil km²</small></dd></div>
+          </dl>
+          <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar apresentação técnica</a>
+        </div>
+      </div>
+      <div class="oth3d-rail" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+      <div class="oth-legend" aria-hidden="true">
+        <span><svg viewBox="0 0 16 16"><path d="M8 2 L13 13 L3 13 Z" class="ship-ais"/></svg>Embarcação com AIS</span>
+        <span><svg viewBox="0 0 16 16"><path d="M8 2 L14 8 L8 14 L2 8 Z" class="ship-ghost"/></svg>Embarcação não cooperativa</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RMT 0200 (3D) -->
+  <section class="oth rmt" id="rmt" aria-labelledby="rmtTitle">
+    <div class="oth3d is-right" id="rmt3d">
+      <canvas id="rmtCanvas" aria-hidden="true"></canvas>
+      <div class="oth3d-scrim" aria-hidden="true"></div>
+      <div class="oth3d-labels" id="rmtLabels" aria-hidden="true"></div>
+      <div class="wrap oth3d-ui">
+        <div class="oth3d-copy">
+          <span class="tagline">Radar Meteorológico RMT 0200</span>
+          <h2 class="h2" id="rmtTitle" data-split>Ler a tempestade antes que ela chegue.</h2>
+          <div class="oth-steps">
+            <div class="oth-step"><span class="mono">01 / 04</span><h3>Engenharia brasileira sob o radome</h3><p>Inaugurado em 2021 com o Cemaden, o RMT 0200 é o primeiro radar meteorológico banda S de dupla polarização em estado sólido fabricado no país. Modular e compacto, simplifica instalação e manutenção.</p></div>
+            <div class="oth-step"><span class="mono">02 / 04</span><h3>Varredura volumétrica de 600 km</h3><p>A antena gira em várias elevações e monta um retrato tridimensional da atmosfera, detectando fenômenos intensos a longas distâncias, antes que se tornem desastres.</p></div>
+            <div class="oth-step"><span class="mono">03 / 04</span><h3>Duas polarizações ao mesmo tempo</h3><p>O feixe sai nas polarizações horizontal e vertical simultaneamente. O transceptor por rádio definido por software e a modulação NLFM reduzem os lóbulos laterais, e o estado sólido opera com menor potência de pico, consumo e ruído.</p></div>
+            <div class="oth-step"><span class="mono">04 / 04</span><h3>Cada gota, classificada</h3><p>Comparando os dois retornos, o RMT 0200 distingue chuva, granizo, gelo e neve e classifica a intensidade da precipitação para tráfego aéreo, defesa civil, agricultura e recursos hídricos.</p></div>
+          </div>
+          <dl class="oth-stats">
+            <div><dt>Raio de monitoramento</dt><dd><span class="num" data-to="600">0</span><small>km</small></dd></div>
+            <div><dt>Polarizações simultâneas</dt><dd><span class="num" data-to="2">0</span><small>H e V</small></dd></div>
+            <div><dt>Em operação desde</dt><dd>2021<small>Cemaden</small></dd></div>
+          </dl>
+          <div class="market-links">
+            <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar demonstração</a>
+            <a class="textlink" href="https://www.iacit.com.br/produtos/meteorologia/rmt-0200---radar-meteorologico-banda-s-em-estado-s" target="_blank" rel="noopener">Ficha do RMT 0200 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="oth3d-rail" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+      <div class="oth-legend rmt-legend" aria-hidden="true">
+        <span><i class="sw" style="background:var(--signal)"></i>Granizo</span>
+        <span><i class="sw" style="background:var(--sea)"></i>Chuva</span>
+        <span><i class="sw" style="background:var(--text)"></i>Gelo e neve</span>
+        <span><i class="sw" style="background:var(--muted)"></i>Precipitação fraca</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="portfolio" id="produtos" aria-labelledby="pfTitle">
+    <div class="wrap">
+      <div class="portfolio-head">
+        <div>
+          <h2 class="h2" id="pfTitle" data-split>Portfólio de sistemas</h2>
+          <p class="lead" data-fade style="margin-top:18px">Selecione uma área para filtrar. Cada sistema abre a página oficial correspondente.</p>
+        </div>
+        <div class="pfilter" role="group" aria-label="Filtrar sistemas por área">
+          <button type="button" data-cat="all" aria-pressed="true">Todos</button>
+          <button type="button" data-cat="defesa" aria-pressed="false">Defesa</button>
+          <button type="button" data-cat="cnsatm" aria-pressed="false">CNS/ATM</button>
+          <button type="button" data-cat="meteo" aria-pressed="false">Meteorologia</button>
+          <button type="button" data-cat="tel" aria-pressed="false">Telemetria e software</button>
+        </div>
+      </div>
+      <ul class="plist">
+        <li class="prow" data-cat="defesa"><a href="https://www.iacit.com.br/produtos/defesa/droneblocker" target="_blank" rel="noopener"><span class="pcode">DRONEBlocker</span><span class="pname">Sistema antidrone de contramedida eletrônica</span><span class="pdesc">Bloqueia vários drones ao mesmo tempo, inclusive enxames. Empregado pelo Exército Brasileiro nos Jogos Rio 2016.</span><span class="pcat">Defesa</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="defesa"><a href="https://www.iacit.com.br/produtos/defesa/oth-0100---radar-alem-do-horizonte" target="_blank" rel="noopener"><span class="pcode">OTH 0100</span><span class="pname">Radar além do horizonte</span><span class="pdesc">Rastreia embarcações não cooperativas a até 200 MN e monitora mais de 143 mil km² por radar.</span><span class="pcat">Defesa</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="defesa"><a href="https://www.iacit.com.br/produtos/defesa-e-seguranca-publica/c2-i---sistema-de-comando-e-controle" target="_blank" rel="noopener"><span class="pcode">VIMTRAH</span><span class="pname">Vigilância Integrada Marítima em Tempo Real</span><span class="pdesc">Integra sensores para consciência situacional marítima em tempo real.</span><span class="pcat">Defesa</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/produtos/cnsatn/dme-0200" target="_blank" rel="noopener"><span class="pcode">DME 0200</span><span class="pname">Equipamento medidor de distância</span><span class="pdesc">Primeiro DME da rede DME/DME do DECEA, apoio à navegação PBN e backup ao GPS.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/produtos/cnsatm" target="_blank" rel="noopener"><span class="pcode">VOR 0100</span><span class="pname">Radiofarol omnidirecional VHF</span><span class="pdesc">Auxílio à navegação aérea nas versões fixa e transportável.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/produtos/cnsatn/gbas" target="_blank" rel="noopener"><span class="pcode">GBAS 0100 CAT 1</span><span class="pname">Sistema de aumentação baseado em solo</span><span class="pdesc">Tecnologia exclusiva no Brasil para informações de navegação precisas aos operadores.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/produtos/cnsatm/ndb-0200" target="_blank" rel="noopener"><span class="pcode">NDB 0200</span><span class="pname">Radiofarol não direcional</span><span class="pdesc">Auxílio à navegação aérea da linha CNS/ATM da IACIT.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/produtos/cnsatn/vhf-am" target="_blank" rel="noopener"><span class="pcode">VHF-AM</span><span class="pname">Comunicação aeronáutica</span><span class="pdesc">Sistema de comunicação da linha CNS/ATM da IACIT.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="cnsatm"><a href="https://www.iacit.com.br/contato" target="_blank" rel="noopener"><span class="pcode">MUST</span><span class="pname">Solução para tráfego aéreo e marítimo</span><span class="pdesc">Consulte especificações e disponibilidade com a equipe IACIT.</span><span class="pcat">CNS/ATM</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://www.iacit.com.br/produtos/meteorologia/rmt-0200---radar-meteorologico-banda-s-em-estado-s" target="_blank" rel="noopener"><span class="pcode">RMT 0200</span><span class="pname">Radar meteorológico banda S em estado sólido</span><span class="pdesc">Dupla polarização, raio de até 600 km. A IACIT é a única na América Latina a dominar essa tecnologia.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://www.iacit.com.br/produtos/meteorologia/radar-meteorologico-doppler---banda-s" target="_blank" rel="noopener"><span class="pcode">Doppler Banda S</span><span class="pname">Radar meteorológico de dupla polarização</span><span class="pdesc">Detecção de fenômenos meteorológicos de longo alcance com tecnologia Doppler.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://www.iacit.com.br/produtos/meteorologia/radh-0200---radar-oceanico" target="_blank" rel="noopener"><span class="pcode">RADH 0200</span><span class="pname">Radar oceânico</span><span class="pdesc">Mapeia correntes marítimas e detecta tornados e tsunamis, com aplicação civil e militar.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://conteudos.iacit.com.br/lp-meteodrone" target="_blank" rel="noopener"><span class="pcode">Meteodrone</span><span class="pname">Coleta de dados atmosféricos</span><span class="pdesc">Dados atmosféricos precisos nos ambientes mais desafiadores.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://www.iacit.com.br/produtos/meteorologia/nowcast---sistema-de-alerta-e-prevencao" target="_blank" rel="noopener"><span class="pcode">Nowcast</span><span class="pname">Sistema de alerta e prevenção</span><span class="pdesc">Alertas meteorológicos de curto prazo para apoiar a defesa civil e operações críticas.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="meteo"><a href="https://www.iacit.com.br/produtos/meteorologia/neuralcast---routecast" target="_blank" rel="noopener"><span class="pcode">NeuralCAST / RouteCAST</span><span class="pname">Previsão meteorológica para navegação aérea</span><span class="pdesc">Softwares de previsão com redes neurais artificiais para rotas e aeródromos.</span><span class="pcat">Meteorologia</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="tel"><a href="https://www.iacit.com.br/produtos/cnsatn/rcs-0400" target="_blank" rel="noopener"><span class="pcode">RCS 0400</span><span class="pname">Telemetria e controle remoto</span><span class="pdesc">Controle operacional em tempo real de equipamentos e sistemas em locais remotos.</span><span class="pcat">Telemetria e software</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="tel"><a href="https://www.iacit.com.br/mercados/auxilio-e-controle-do-trafego-aereo-e-maritimo" target="_blank" rel="noopener"><span class="pcode">TEND-MET / STSC</span><span class="pname">Software meteorológico para controle de tráfego aéreo</span><span class="pdesc">Tendências de até três horas para aeródromos e monitoramento de tempo severo convectivo.</span><span class="pcat">Telemetria e software</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+        <li class="prow" data-cat="tel"><a href="https://www.iacit.com.br/mercados/fabrica-de-software" target="_blank" rel="noopener"><span class="pcode">SGTAN</span><span class="pname">Gestão de tarifas de navegação aérea</span><span class="pdesc">Sistema integrado desenvolvido para a Força Aérea Brasileira.</span><span class="pcat">Telemetria e software</span><svg class="parrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a></li>
+      </ul>
+    </div>
+    <div class="ppreview" aria-hidden="true">
+      <div class="pv-top"><span class="pv-cat">Defesa</span>
+        <svg class="pv-scope" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="v-line"/><circle cx="20" cy="20" r="9" class="v-faint"/><line x1="20" y1="20" x2="20" y2="3" class="v-accent pv-sweep"/></svg>
+      </div>
+      <div class="pv-code">DRONEBlocker</div>
+      <p class="pv-desc"></p>
+    </div>
+  </section>
+
+  <!-- EDGE -->
+  <section class="edge" id="diferenciais" aria-labelledby="edgeTitle">
+    <div class="wrap edge-grid">
+      <div class="edge-head">
+        <h2 class="h2" id="edgeTitle" data-split>Credenciais de Estado. Engenharia própria.</h2>
+        <p class="lead" data-fade>O propósito da IACIT é produzir tecnologia fundamental para a autonomia nacional e colocar o Brasil na vanguarda tecnológica mundial.</p>
+        <a class="btn btn-ghost magnetic" href="https://www.iacit.com.br/sobre" target="_blank" rel="noopener">Conhecer a IACIT</a>
+      </div>
+      <ul class="edge-list">
+        <li class="edge-item"><span class="edge-rule"></span>
+          <svg class="edge-icon" viewBox="0 0 40 40" aria-hidden="true"><path class="draw" d="M20 3 L34 8 V19 C34 28 27 34 20 37 C13 34 6 28 6 19 V8 Z"/><path class="draw" d="M14 20 L18 24 L26 15"/></svg>
+          <div><h3>Empresa Estratégica de Defesa</h3><p>Certificação concedida pelo Ministério da Defesa em 2013. Muitos produtos IACIT também são classificados como Produto Estratégico de Defesa (PED), reforçando a parceria constante com as Forças Armadas.</p></div></li>
+        <li class="edge-item"><span class="edge-rule"></span>
+          <svg class="edge-icon" viewBox="0 0 40 40" aria-hidden="true"><rect class="draw" x="11" y="11" width="18" height="18" rx="2"/><rect class="draw" x="16" y="16" width="8" height="8"/><path class="draw" d="M15 5 V11 M20 5 V11 M25 5 V11 M15 29 V35 M20 29 V35 M25 29 V35 M5 15 H11 M5 20 H11 M5 25 H11 M29 15 H35 M29 20 H35 M29 25 H35"/></svg>
+          <div><h3>Tecnologia 100% nacional</h3><p>Produtos e sistemas exclusivos, projetados e fabricados no Brasil. A IACIT é uma das poucas empresas no mundo, e a única na América Latina, a dominar a tecnologia de radar meteorológico banda S de dupla polarização em estado sólido.</p></div></li>
+        <li class="edge-item"><span class="edge-rule"></span>
+          <svg class="edge-icon" viewBox="0 0 40 40" aria-hidden="true"><path class="draw" d="M8 23 V19 A12 12 0 0 1 32 19 V23"/><path class="draw" d="M6 22 H11 V31 H6 Z"/><path class="draw" d="M29 22 H34 V31 H29 Z"/><path class="draw" d="M32 31 C32 35 28 36 23 36"/></svg>
+          <div><h3>Suporte técnico especializado</h3><p>Uma história que começou na engenharia de campo: instalação, manutenção e fornecimento turn-key de sistemas para aeroportos e telecomunicações. A mesma equipe acompanha cada sistema do projeto à operação.</p></div></li>
+        <li class="edge-item"><span class="edge-rule"></span>
+          <svg class="edge-icon" viewBox="0 0 40 40" aria-hidden="true"><path class="draw" d="M16 4 H24 M18 4 V15 L8 34 H32 L22 15 V4"/><path class="draw" d="M12 26 H28"/></svg>
+          <div><h3>Infraestrutura sólida de P&amp;D</h3><p>Departamento de P,D&amp;I desde 2008 e, desde 2019, unidade fabril, P&amp;D e administração reunidas em instalações que triplicaram de área para comportar novos projetos.</p></div></li>
+        <li class="edge-item"><span class="edge-rule"></span>
+          <svg class="edge-icon" viewBox="0 0 40 40" aria-hidden="true"><circle class="draw" cx="20" cy="20" r="15"/><circle class="draw" cx="20" cy="20" r="7"/><path class="draw" d="M20 2 V10 M20 30 V38 M2 20 H10 M30 20 H38"/></svg>
+          <div><h3>Projetos críticos</h3><p>Entregas para a Força Aérea, o Exército e a Marinha, para o DECEA e o Cemaden, além de clientes civis e do setor privado que dependem de sistemas que não podem falhar.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section class="journey" id="trajetoria" aria-labelledby="jTitle">
+    <div class="wrap">
+      <div class="journey-head">
+        <h2 class="h2" id="jTitle" data-split>Quarenta anos construindo soberania.</h2>
+        <p class="lead" data-fade>Pessoas e tecnologia construindo o futuro: os marcos que levaram a IACIT dos serviços de engenharia ao domínio de tecnologias críticas.</p>
+      </div>
+      <div class="journey-grid">
+        <div class="tl-sticky"><div class="tl-year" aria-hidden="true">1986</div><p class="tl-caption">Role para avançar na linha do tempo</p></div>
+        <ol class="tl-list">
+          <li class="tl-progress" aria-hidden="true"><span></span></li>
+          <li class="tl-item" data-year="1986"><span class="mono">1986</span><h3>Fundação em São José dos Campos</h3><p>A IACIT nasce prestando suporte técnico à Tecnasa, fabricante de equipamentos de navegação aérea, e se consolida em serviços de engenharia para aeroportos e telecomunicações.</p></li>
+          <li class="tl-item" data-year="2008"><span class="mono">2008</span><h3>Nasce o P,D&amp;I</h3><p>Implantação do departamento de Pesquisa, Desenvolvimento &amp; Inovação, construção da unidade fabril e início da modernização do radar meteorológico.</p></li>
+          <li class="tl-item" data-year="2012"><span class="mono">2012</span><h3>Prêmio Finep de Inovação</h3><p>Vencedora na categoria Média Empresa Inovadora Nacional.</p></li>
+          <li class="tl-item" data-year="2013"><span class="mono">2013</span><h3>Empresa Estratégica de Defesa</h3><p>Certificação EED e início do projeto do primeiro radar OTH da América do Sul.</p></li>
+          <li class="tl-item" data-year="2016"><span class="mono">2016</span><h3>Radar Oceânico e DRONEBlocker</h3><p>O radar oceânico entra em funcionamento e o DRONEBlocker protege os Jogos Olímpicos Rio 2016 com o Exército Brasileiro.</p></li>
+          <li class="tl-item" data-year="2017"><span class="mono">2017</span><h3>OTH em operação e DME 0200</h3><p>Lançamento do radar OTH com os primeiros resultados de vigilância marítima e início da navegação DME/DME no Brasil com o DME 0200 para a FAB.</p></li>
+          <li class="tl-item" data-year="2019"><span class="mono">2019</span><h3>CMMI nível 3 e nova sede</h3><p>Certificação de maturidade em software e expansão que triplicou a área física da empresa.</p></li>
+          <li class="tl-item" data-year="2021"><span class="mono">2021</span><h3>RMT 0200 com o Cemaden</h3><p>Inauguração do primeiro radar meteorológico banda S de dupla polarização em estado sólido fabricado no país.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contato" aria-labelledby="ctaTitle">
+    <div class="wrap">
+      <h2 class="cta-title" id="ctaTitle" data-split>Sua próxima missão começa com uma conversa.</h2>
+      <div class="cta-rows">
+        <a class="cta-row" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">
+          <h3>Agendar reunião</h3><p>Converse com a equipe comercial sobre requisitos, prazos e integração ao seu projeto.</p>
+          <span class="cta-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></span></a>
+        <a class="cta-row" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">
+          <h3>Solicitar demonstração</h3><p>Veja DRONEBlocker, radares e sistemas CNS/ATM em operação com especialistas da IACIT.</p>
+          <span class="cta-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></span></a>
+        <a class="cta-row" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">
+          <h3>Contato institucional</h3><p>Parcerias, imprensa, relações governamentais e cooperação em P,D&amp;I.</p>
+          <span class="cta-arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></span></a>
+      </div>
+      <dl class="cta-direct">
+        <div><dt>Endereço</dt><dd>Rod. Presidente Dutra, km 154,7, prédio 4, ala A<br>Jardim das Indústrias, São José dos Campos (SP)</dd></div>
+        <div><dt>Telefone</dt><dd><a href="tel:+551237977777">+55 12 3797 7777</a></dd></div>
+        <div><dt>E-mail</dt><dd><a href="mailto:marketing@iacit.com.br">marketing@iacit.com.br</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <p class="footer-motto">Pessoas e tecnologia construindo o futuro.</p>
+      <ul class="footer-links">
+        <li><a href="https://www.iacit.com.br/" target="_blank" rel="noopener">Site oficial</a></li>
+        <li><a href="https://www.linkedin.com/company/iacit-technology-solutions" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://www.youtube.com/channel/UC0_uMnZX6Ebi0cRfnhb5BDg" target="_blank" rel="noopener">YouTube</a></li>
+        <li><a href="https://www.instagram.com/iacit_/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.iacit.com.br/trabalhe-conosco" target="_blank" rel="noopener">Trabalhe conosco</a></li>
+      </ul>
+    </div>
+    <div class="fw" aria-hidden="true"><span>I</span><span>A</span><span>C</span><span>I</span><span>T</span></div>
+    <div class="footer-bottom">
+      <span>IACIT Soluções Tecnológicas S.A. · São José dos Campos, SP</span>
+      <span>Landing page conceitual com informações públicas de iacit.com.br</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(s,c){return (c||document).querySelector(s);};
+  var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+  var root = document.documentElement;
+  var NS = 'http://www.w3.org/2000/svg';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var G = window.gsap;
+
+  /* ---------- Theme ---------- */
+  var colors = {};
+  var themeHooks = [];
+  function runThemeHooks(){themeHooks.forEach(function(f){try{f();}catch(e){}});}
+  function hexToRgb(h){h=(h||'').trim().replace('#','');if(h.length===3){h=h.split('').map(function(c){return c+c;}).join('');}var n=parseInt(h||'000000',16);return [(n>>16)&255,(n>>8)&255,n&255];}
+  function readColors(){var cs=getComputedStyle(root);colors.signal=hexToRgb(cs.getPropertyValue('--signal'));colors.text=hexToRgb(cs.getPropertyValue('--text'));colors.muted=hexToRgb(cs.getPropertyValue('--muted'));colors.sea=hexToRgb(cs.getPropertyValue('--sea'));}
+  function rgba(c,a){return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+  function isDark(){var t=root.getAttribute('data-theme');if(t){return t==='dark';}return window.matchMedia('(prefers-color-scheme: dark)').matches;}
+  readColors();
+  var toggle=$('#themeToggle');
+  if(toggle){toggle.addEventListener('click',function(){var next=isDark()?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('iacit-theme',next);}catch(e){}readColors();runThemeHooks();});}
+  var mqDark=window.matchMedia('(prefers-color-scheme: dark)');
+  if(mqDark.addEventListener){mqDark.addEventListener('change',function(){readColors();runThemeHooks();});}
+
+  /* ---------- SVG helpers ---------- */
+  function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs){e.setAttribute(k,attrs[k]);}if(parent){parent.appendChild(e);}return e;}
+
+  /* ---------- Radar canvas ---------- */
+  var canvas=$('#radar'), ctx=canvas?canvas.getContext('2d'):null;
+  var W=0,H=0,cx=0,cy=0,R=0,sweep=-Math.PI/2,last=performance.now(),rafId=null,visible=true;
+  var SPEED=Math.PI*2/6500;
+  var targets=[];
+  for(var i=0;i<9;i++){targets.push({r:.22+Math.random()*.7,th:Math.random()*Math.PI*2,vr:(Math.random()-.5)*.00003,vth:(Math.random()-.5)*.00006,glow:0,id:'TGT '+String(11+i*7).padStart(3,'0'),ghost:i%3===0});}
+  function resize(){
+    if(!canvas){return;}
+    var r=canvas.getBoundingClientRect();var dpr=Math.min(window.devicePixelRatio||1,2);
+    W=r.width;H=r.height;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    var desk=W>=900;cx=desk?W*.7:W*.5;cy=desk?H*.52:H*.27;R=desk?Math.min(H*.4,W*.3):Math.min(W*.42,H*.22);
+  }
+  function draw(dt){
+    if(!ctx){return;}
+    ctx.clearRect(0,0,W,H);
+    ctx.save();ctx.translate(cx,cy);
+    ctx.globalAlpha=W<900?.7:1;
+    ctx.lineWidth=1;
+    for(var k=1;k<=4;k++){ctx.beginPath();ctx.arc(0,0,R*k/4,0,Math.PI*2);ctx.strokeStyle=rgba(colors.muted,k===4?.5:.22);ctx.stroke();}
+    for(var d=0;d<360;d+=5){var a=d*Math.PI/180,lng=d%30===0;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*(lng?1.045:1.02),Math.sin(a)*R*(lng?1.045:1.02));ctx.strokeStyle=rgba(colors.muted,lng?.6:.3);ctx.stroke();}
+    ctx.font='500 10px "IBM Plex Mono", monospace';ctx.fillStyle=rgba(colors.muted,.75);ctx.textAlign='center';ctx.textBaseline='middle';
+    for(var b=0;b<360;b+=30){var ab=(b-90)*Math.PI/180;ctx.fillText(String(b).padStart(3,'0'),Math.cos(ab)*R*1.1,Math.sin(ab)*R*1.1);}
+    ctx.beginPath();ctx.moveTo(-R,0);ctx.lineTo(R,0);ctx.moveTo(0,-R);ctx.lineTo(0,R);ctx.strokeStyle=rgba(colors.muted,.14);ctx.stroke();
+    // sector hint (OTH 120°)
+    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,-.35,-.35+2.0944);ctx.closePath();ctx.fillStyle=rgba(colors.signal,.04);ctx.fill();
+    // afterglow
+    var trail=1.15;
+    if(ctx.createConicGradient){
+      var g=ctx.createConicGradient(sweep-trail,0,0);var t=trail/(Math.PI*2);
+      g.addColorStop(0,rgba(colors.signal,0));g.addColorStop(t,rgba(colors.signal,.26));g.addColorStop(Math.min(t+.002,1),rgba(colors.signal,0));g.addColorStop(1,rgba(colors.signal,0));
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,R,0,Math.PI*2);ctx.fill();
+    }
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(sweep)*R,Math.sin(sweep)*R);ctx.strokeStyle=rgba(colors.signal,.95);ctx.lineWidth=1.5;ctx.stroke();ctx.lineWidth=1;
+    var lit=0;
+    ctx.textAlign='left';
+    targets.forEach(function(tg){
+      tg.th+=tg.vth*dt;tg.r=Math.max(.15,Math.min(.95,tg.r+tg.vr*dt));
+      var diff=(sweep-tg.th)%(Math.PI*2);if(diff<0){diff+=Math.PI*2;}
+      if(diff<.07){tg.glow=1;}
+      tg.glow=Math.max(0,tg.glow-dt/3400);
+      var al=reduce?.85:tg.glow;
+      if(al>.02){
+        lit++;
+        var x=Math.cos(tg.th)*tg.r*R,y=Math.sin(tg.th)*tg.r*R;
+        ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=rgba(tg.ghost?colors.signal:colors.text,al);ctx.fill();
+        ctx.beginPath();ctx.arc(x,y,8+(1-al)*12,0,Math.PI*2);ctx.strokeStyle=rgba(colors.signal,al*.5);ctx.stroke();
+        if(al>.3){ctx.fillStyle=rgba(colors.muted,al);ctx.fillText(tg.id+(tg.ghost?'  sem AIS':''),x+14,y-11);}
+      }
+    });
+    ctx.restore();
+    return lit;
+  }
+  var roAz=$('#roAz'),roTr=$('#roTracks'),roTimer=0;
+  function frame(now){
+    var dt=Math.min(now-last,50);last=now;
+    if(!reduce){sweep=(sweep+SPEED*dt)%(Math.PI*2);}
+    var lit=draw(dt);
+    roTimer+=dt;
+    if(roTimer>120&&roAz){roTimer=0;var deg=Math.round(((sweep*180/Math.PI)+90+360)%360);roAz.textContent=String(deg).padStart(3,'0')+'°';roTr.textContent=String(lit).padStart(2,'0');}
+    rafId=visible&&!reduce?requestAnimationFrame(frame):null;
+  }
+  function startRadar(){if(!canvas){return;}resize();if(reduce){draw(16);if(roTr){roTr.textContent=String(targets.length).padStart(2,'0');}return;}if(!rafId){last=performance.now();rafId=requestAnimationFrame(frame);}}
+  window.addEventListener('resize',function(){resize();if(reduce){draw(16);}});
+  if('IntersectionObserver' in window&&canvas){
+    new IntersectionObserver(function(entries){visible=entries[0].isIntersecting;if(visible&&!rafId&&!reduce){last=performance.now();rafId=requestAnimationFrame(frame);}},{threshold:0}).observe(canvas);
+  }
+  if(toggle){toggle.addEventListener('click',function(){if(reduce){draw(16);}});}
+
+  /* ---------- Static SVG builders ---------- */
+  function buildAtm(){
+    var g=$('#vAtmTicks');if(!g){return;}
+    for(var d=0;d<360;d+=5){var len=d%30===0?14:(d%10===0?9:5);var a=d*Math.PI/180;el('line',{x1:200+Math.sin(a)*150,y1:200-Math.cos(a)*150,x2:200+Math.sin(a)*(150-len),y2:200-Math.cos(a)*(150-len),'class':d%30===0?'v-line':'v-faint'},g);}
+    [['N',0],['L',90],['S',180],['O',270]].forEach(function(p){var a=p[1]*Math.PI/180;var tx=el('text',{x:200+Math.sin(a)*124,y:200-Math.cos(a)*124+4,'text-anchor':'middle','class':'v-text'},g);tx.textContent=p[0];});
+  }
+  var telNodes=[];
+  function buildTel(){
+    var ge=$('#vTelEdges'),gn=$('#vTelNodes'),gp=$('#vTelPackets');if(!ge){return;}
+    var list=[['DME',-150,140],['VOR',-100,150],['Radar',-42,140],['ADS-B',18,150],['Energia',78,132],['Abrigo',138,150],['Rede',190,122]];
+    list.forEach(function(n){
+      var a=n[1]*Math.PI/180,x=200+Math.cos(a)*n[2],y=200+Math.sin(a)*n[2];
+      el('line',{x1:200,y1:200,x2:x,y2:y,'class':'v-faint'},ge);
+      el('circle',{cx:x,cy:y,r:7,'class':'v-node'},gn);
+      var tx=el('text',{x:x,y:y+(y>200?24:-15),'text-anchor':'middle','class':'v-text'},gn);tx.textContent=n[0];
+      var p=el('circle',{cx:x,cy:y,r:3,'class':'v-solid'},gp);
+      telNodes.push({x:x,y:y,p:p});
+    });
+  }
+  buildAtm();buildTel();
+
+  /* ---------- Fallback without GSAP ---------- */
+  function killPreloader(){var p=$('.preloader');if(p&&p.parentNode){p.parentNode.removeChild(p);}}
+  if(!G){killPreloader();startRadar();root.classList.add('no-3d');$$('.oth-stats .num').forEach(function(n){n.textContent=n.getAttribute('data-to');});return;}
+
+  var ST=window.ScrollTrigger;
+  G.registerPlugin(ST);
+  var hasScramble=typeof window.ScrambleTextPlugin!=='undefined';if(hasScramble){G.registerPlugin(window.ScrambleTextPlugin);}
+  var hasFlip=typeof window.Flip!=='undefined';if(hasFlip){G.registerPlugin(window.Flip);}
+
+  /* ---------- Smooth scroll ---------- */
+  var lenis=null;
+  if(!reduce&&typeof window.Lenis!=='undefined'){
+    lenis=new window.Lenis({duration:1.15,smoothWheel:true});
+    lenis.on('scroll',ST.update);
+    G.ticker.add(function(t){lenis.raf(t*1000);});
+    G.ticker.lagSmoothing(0);
+    lenis.stop();
+  }
+  $$('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var id=a.getAttribute('href');if(id.length<2){return;}
+      var target=$(id);if(!target){return;}
+      e.preventDefault();
+      if(lenis){lenis.scrollTo(target,{offset:id==='#top'?0:-8});}else{target.scrollIntoView({behavior:reduce?'auto':'smooth'});}
+    });
+  });
+
+  /* ---------- Split utility ---------- */
+  function splitWords(node){
+    var text=node.textContent.replace(/\s+/g,' ').trim();node.setAttribute('aria-label',text);node.textContent='';
+    var parts=text.split(' ');var inners=[];
+    parts.forEach(function(p,i){var w=document.createElement('span');w.className='w';w.setAttribute('aria-hidden','true');var wi=document.createElement('span');wi.className='wi';wi.textContent=p;w.appendChild(wi);node.appendChild(w);if(i<parts.length-1){node.appendChild(document.createTextNode(' '));}inners.push(wi);});
+    return inners;
+  }
+
+  /* ---------- Draw-in helper ---------- */
+  function prepDraw(shapes){shapes.forEach(function(s){var L=0;try{L=s.getTotalLength();}catch(e){L=200;}s.style.strokeDasharray=L;s.style.strokeDashoffset=L;});}
+
+  /* ---------- Preloader + hero intro ---------- */
+  var pre=$('.preloader'),preCount=$('.pre-count'),preRing=$('.pre-ring-progress');
+  var C=2*Math.PI*46;
+  if(preRing){preRing.style.strokeDasharray=C;preRing.style.strokeDashoffset=C;}
+  var heroLines=$$('.hero-title .li'),kicker=$('.kicker-text'),kickerText=kicker?kicker.textContent:'';
+  G.set(heroLines,{yPercent:115});
+  G.set(['.hero-kicker','.hero-lede','.hero-ctas','.hero-readout','.scroll-cue'],{autoAlpha:0,y:24});
+  G.set(canvas,{autoAlpha:0,scale:.9});
+  startRadar();
+
+  function heroIn(){
+    var tl=G.timeline();
+    tl.to(canvas,{autoAlpha:1,scale:1,duration:1.8,ease:'expo.out'},0)
+      .to(heroLines,{yPercent:0,duration:1.2,ease:'expo.out',stagger:.09},.1)
+      .to('.hero-kicker',{autoAlpha:1,y:0,duration:.8,ease:'power3.out'},.3);
+    if(hasScramble&&kicker&&!reduce){tl.to(kicker,{duration:1.2,scrambleText:{text:kickerText,chars:'01ABCDEFGHIJKLMNOPQRSTUVWXYZ',speed:.5}},.3);}
+    tl.to('.hero-lede',{autoAlpha:1,y:0,duration:.9,ease:'power3.out'},.55)
+      .to('.hero-ctas',{autoAlpha:1,y:0,duration:.9,ease:'power3.out'},.68)
+      .to(['.hero-readout','.scroll-cue'],{autoAlpha:1,y:0,duration:.9,ease:'power3.out',stagger:.1},.85);
+    return tl;
+  }
+  var counter={v:0};
+  var intro=G.timeline({onComplete:function(){killPreloader();if(lenis){lenis.start();}ST.refresh();}});
+  intro.to(counter,{v:100,duration:reduce?.15:1.5,ease:'power2.inOut',onUpdate:function(){if(preCount){preCount.textContent=String(Math.round(counter.v)).padStart(3,'0');}if(preRing){preRing.style.strokeDashoffset=C*(1-counter.v/100);}}})
+       .to(pre,{clipPath:'inset(0 0 100% 0)',duration:reduce?.2:1,ease:'expo.inOut'},'+=.12')
+       .add(heroIn(),reduce?'-=.1':'-=.5');
+  setTimeout(function(){if(document.body.contains(pre)){intro.progress(1);}},6000);
+
+  /* ---------- Hero scroll + tilt ---------- */
+  if(!reduce){
+    G.to('.hero-inner',{yPercent:-16,autoAlpha:.15,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+    G.to('#radarWrap',{scale:1.18,autoAlpha:.25,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+    if(fine){
+      var rx=G.quickTo(canvas,'rotationX',{duration:1.2,ease:'power3'}),ry=G.quickTo(canvas,'rotationY',{duration:1.2,ease:'power3'});
+      $('.hero').addEventListener('mousemove',function(e){ry((e.clientX/window.innerWidth-.5)*10);rx(-(e.clientY/window.innerHeight-.5)*7);});
+    }
+  }
+
+  /* ---------- Nav state ---------- */
+  var nav=$('#nav');
+  ST.create({start:0,end:'max',onUpdate:function(self){var y=self.scroll();nav.classList.toggle('is-scrolled',y>40);if(self.direction===1&&y>500){nav.classList.add('is-hidden');}else if(self.direction===-1){nav.classList.remove('is-hidden');}}});
+
+  /* ---------- Heading splits ---------- */
+  $$('[data-split]').forEach(function(h){
+    var words=splitWords(h);
+    if(reduce){return;}
+    G.from(words,{yPercent:110,duration:1.1,ease:'expo.out',stagger:.045,scrollTrigger:{trigger:h,start:'top 86%',once:true}});
+  });
+  if(!reduce){
+    $$('[data-fade]').forEach(function(p){G.from(p,{y:26,autoAlpha:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:p,start:'top 88%',once:true}});});
+  }
+
+  /* ---------- Manifesto scrub ---------- */
+  var man=$('[data-scrub-words]');
+  if(man){
+    var mw=splitWords(man);
+    if(!reduce){
+      G.fromTo(mw,{opacity:.14},{opacity:1,ease:'none',stagger:.1,scrollTrigger:{trigger:man,start:'top 78%',end:'bottom 42%',scrub:.6}});
+    }
+  }
+  if(!reduce){
+    G.from('.fact-rule',{scaleX:0,duration:1.2,ease:'expo.out',stagger:.12,scrollTrigger:{trigger:'.facts',start:'top 85%',once:true}});
+    G.from('.fact-val, .fact p',{y:30,autoAlpha:0,duration:1,ease:'power3.out',stagger:.06,scrollTrigger:{trigger:'.facts',start:'top 85%',once:true}});
+  }
+
+  /* ---------- Marquee ---------- */
+  var mqTrack=$('.marquee-track');
+  if(mqTrack&&!reduce){
+    var mq=G.to(mqTrack,{xPercent:-50,repeat:-1,duration:40,ease:'none'});
+    ST.create({trigger:'.marquee',start:'top bottom',end:'bottom top',onUpdate:function(self){
+      var v=Math.min(Math.abs(self.getVelocity())/350,5),dir=self.direction<0?-1:1;
+      G.to(mq,{timeScale:dir*(1+v),duration:.35,overwrite:true,onComplete:function(){G.to(mq,{timeScale:dir,duration:1.4});}});
+    }});
+  }
+
+  /* ---------- Market visuals (loops) ---------- */
+  if(!reduce){
+    $$('#vDefWaves .wave').forEach(function(w,i){G.fromTo(w,{attr:{r:14},opacity:.9},{attr:{r:175},opacity:0,duration:3.2,repeat:-1,delay:i*.8,ease:'power1.out'});});
+    G.to('#vDef .drone:not(.drone-target)',{y:'+=7',duration:1.8,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{each:.35,from:'random'}});
+    var lockTl=G.timeline({repeat:-1,repeatDelay:.6});
+    lockTl.set('#vDef .drone-target',{x:206,y:112,opacity:1,rotation:0})
+          .fromTo('#vDef .lock',{opacity:0,scale:1.6,svgOrigin:'206 112'},{opacity:1,scale:1,duration:.5,ease:'expo.out'})
+          .to('#vDef .lock',{opacity:.25,duration:.12,repeat:5,yoyo:true,ease:'none'})
+          .to('#vDef .drone-target',{y:'+=70',rotation:35,opacity:0,duration:1.4,ease:'power2.in'},'+=.1')
+          .to('#vDef .lock',{opacity:0,duration:.3},'<')
+          .set('#vDef .drone-target',{y:112,rotation:0})
+          .to('#vDef .drone-target',{opacity:1,duration:.8},'+=.8');
+
+    G.to('#vAtmRadial',{rotation:360,svgOrigin:'200 200',duration:16,repeat:-1,ease:'none'});
+    $$('#vAtmPulses .pulse-c').forEach(function(c,i){G.fromTo(c,{attr:{r:6},opacity:.9},{attr:{r:95},opacity:0,duration:2.4,repeat:-1,delay:i*1.2,ease:'power1.out'});});
+    var path=$('#vAtmPath'),plane=$('#vAtmPlane');
+    if(path&&plane){var PL=path.getTotalLength(),pp={t:0};G.to(pp,{t:1,duration:10,repeat:-1,ease:'none',onUpdate:function(){var l=pp.t*PL,a=path.getPointAtLength(l),b=path.getPointAtLength(Math.min(l+2,PL));var ang=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;plane.setAttribute('transform','translate('+a.x.toFixed(1)+' '+a.y.toFixed(1)+') rotate('+ang.toFixed(1)+')');}});}
+
+    G.to('#vMetSweep',{rotation:360,svgOrigin:'200 200',duration:6,repeat:-1,ease:'none'});
+    G.to('#vMetCell',{scale:1.06,rotation:4,svgOrigin:'262 150',duration:3.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+    G.to('#vMetCell2',{x:'+=10',y:'-=6',duration:4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+
+    telNodes.forEach(function(n){G.fromTo(n.p,{attr:{cx:n.x,cy:n.y},opacity:0},{attr:{cx:200,cy:200},opacity:1,duration:1.5+Math.random()*1.2,repeat:-1,repeatDelay:Math.random()*1.4,delay:Math.random()*2,ease:'power1.in'});});
+    G.fromTo('#vTelHalo',{attr:{r:20},opacity:.9},{attr:{r:60},opacity:0,duration:2,repeat:-1,ease:'power1.out'});
+    G.to('.pv-sweep',{rotation:360,svgOrigin:'20 20',duration:2.4,repeat:-1,ease:'none'});
+  }
+
+  /* ---------- OTH 3D ---------- */
+  var oth3=initOth3D();
+  var rmt3=initRmt3D();
+
+  /* ---------- Responsive scenes ---------- */
+  var mm=G.matchMedia();
+  mm.add({desk:'(min-width: 900px)',mob:'(max-width: 899px)',rm:'(prefers-reduced-motion: reduce)'},function(context){
+    var c=context.conditions;
+    var panels=$$('.market');
+    if(c.rm){if(oth3){oth3.staticView();}if(rmt3){rmt3.staticView();}return;}
+
+    if(c.desk){
+      var track=$('.markets-track');
+      var dist=function(){return track.scrollWidth-window.innerWidth;};
+      var hz=G.to(track,{x:function(){return -dist();},ease:'none',scrollTrigger:{trigger:'.markets-pin',start:'top top',end:function(){return '+='+dist();},pin:true,scrub:1,invalidateOnRefresh:true,anticipatePin:1,onUpdate:function(self){G.set('.markets-progress span',{scaleX:self.progress});}}});
+      panels.forEach(function(p,i){
+        var items=$$('.market-idx, h3, .market-intro, .specs li, .chips, .market-links',p);
+        var vis=$('.market-visual',p);
+        var st=i===0?{trigger:'.markets-pin',start:'top 70%',once:true}:{trigger:p,containerAnimation:hz,start:'left 72%',once:true};
+        G.from(items,{y:34,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.05,scrollTrigger:st});
+        G.from(vis,{clipPath:'inset(0 0 100% 0)',duration:1.3,ease:'expo.inOut',scrollTrigger:st});
+      });
+    } else {
+      panels.forEach(function(p){
+        G.from($$('.market-visual, .market-idx, h3, .market-intro, .specs li, .chips, .market-links',p),{y:30,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.05,scrollTrigger:{trigger:p,start:'top 80%',once:true}});
+      });
+    }
+    if(oth3){
+      var o3=oth3.build();
+      ST.create({trigger:'#oth3d',start:'top top',end:c.desk?'+=420%':'+=320%',pin:true,scrub:1.2,animation:o3,anticipatePin:1});
+    }
+    if(rmt3){
+      var r3=rmt3.build();
+      ST.create({trigger:'#rmt3d',start:'top top',end:c.desk?'+=440%':'+=340%',pin:true,scrub:1.2,animation:r3,anticipatePin:1});
+    }
+  });
+
+  function initRmt3D(){
+    var host=$('#rmt3d'),cv=$('#rmtCanvas'),lh=$('#rmtLabels'),T=window.THREE;
+    function finalCounters(){$$('.oth-stats .num',host).forEach(function(n){n.textContent=n.getAttribute('data-to');});}
+    if(!T||!host||!cv||root.classList.contains('no-3d')){finalCounters();return null;}
+    var renderer;
+    try{renderer=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){renderer=null;}
+    if(!renderer||!renderer.getContext()){root.classList.add('no-3d');finalCounters();return null;}
+    var PR=Math.min(window.devicePixelRatio||1,2);
+    renderer.setPixelRatio(PR);renderer.setClearColor(0x000000,0);
+    var scene=new T.Scene(),camera=new T.PerspectiveCamera(42,1,.1,3000);
+    function col(n){var c=colors[n]||[128,128,128];return new T.Color(c[0]/255,c[1]/255,c[2]/255);}
+    var RR=120,HUB=new T.Vector3(0,8.4,0),TAU=Math.PI*2;
+    var STORM_AZ=.6,STORM_R=70;
+    var SC=new T.Vector3(Math.cos(STORM_AZ)*STORM_R,0,-Math.sin(STORM_AZ)*STORM_R);
+    var S={tx:0,ty:7.5,tz:0,orb:.9,dist:17,h:4,ground:0,tower:0,sweep:0,rings:0,vol:0,storm:0,lock:0,pol:0,cls:0};
+    function terrain(x,z){return .7*Math.sin(x*.045)*Math.cos(z*.038)+.45*Math.sin((x+z)*.09);}
+
+    /* Ground point field */
+    var gp=[],st=2.4,x,z;
+    for(x=-140;x<=140;x+=st){for(z=-140;z<=140;z+=st){if(x*x+z*z>140*140){continue;}gp.push(x,terrain(x,z),z);}}
+    var gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(gp,3));
+    var groundMat=new T.ShaderMaterial({transparent:true,depthWrite:false,
+      uniforms:{uAz:{value:0},uSweep:{value:0},uReveal:{value:0},uPx:{value:PR},uBase:{value:col('muted')},uSig:{value:col('signal')}},
+      vertexShader:['uniform float uAz,uSweep,uReveal,uPx;varying float vG,vA;',
+        'void main(){vec3 p=position;float r=length(p.xz);float azp=atan(-p.z,p.x);float d=mod(uAz-azp,6.28318);',
+        'vG=exp(-d*3.0)*uSweep*step(r,120.0);vA=smoothstep(uReveal+20.0,uReveal-20.0,r);',
+        'vec4 mv=modelViewMatrix*vec4(p,1.0);gl_PointSize=clamp((1.4+vG*1.2)*uPx*(200.0/-mv.z),1.0,6.0*uPx);gl_Position=projectionMatrix*mv;}'].join('\n'),
+      fragmentShader:['uniform vec3 uBase,uSig;varying float vG,vA;',
+        'void main(){vec2 c=gl_PointCoord-0.5;if(dot(c,c)>0.25)discard;gl_FragColor=vec4(mix(uBase,uSig,vG*0.9),(0.3+vG*0.5)*vA);}'].join('\n')});
+    var ground=new T.Points(gg,groundMat);ground.frustumCulled=false;scene.add(ground);
+
+    /* Tower + radome */
+    var towerMat=new T.LineBasicMaterial({color:col('text'),transparent:true,opacity:0});
+    var tw=[],legs=[[1.3,1.3],[-1.3,1.3],[-1.3,-1.3],[1.3,-1.3]],i,j;
+    for(i=0;i<4;i++){var a=legs[i],b=legs[(i+1)%4];tw.push(a[0],0,a[1],a[0]*.5,6,a[1]*.5);
+      for(j=0;j<3;j++){var y0=j*2,y1=(j+1)*2,f0=1-.5*y0/6,f1=1-.5*y1/6;tw.push(a[0]*f0,y0,a[1]*f0,b[0]*f1,y1,b[1]*f1,b[0]*f0,y0,b[1]*f0,a[0]*f1,y1,a[1]*f1);}
+      tw.push(a[0]*.5,6,a[1]*.5,b[0]*.5,6,b[1]*.5);}
+    var tg=new T.BufferGeometry();tg.setAttribute('position',new T.Float32BufferAttribute(tw,3));
+    var tower=new T.LineSegments(tg,towerMat);tower.frustumCulled=false;scene.add(tower);
+    var domeMat=new T.MeshBasicMaterial({color:col('text'),wireframe:true,transparent:true,opacity:0});
+    var dome=new T.Mesh(new T.IcosahedronGeometry(2.6,2),domeMat);dome.position.copy(HUB);scene.add(dome);
+    var dishPivot=new T.Group();dishPivot.position.copy(HUB);scene.add(dishPivot);
+    var dishTilt=new T.Group();dishPivot.add(dishTilt);
+    var dishMat=new T.MeshBasicMaterial({color:col('signal'),transparent:true,opacity:0,side:T.DoubleSide});
+    var dish=new T.Mesh(new T.CircleGeometry(1.9,32),dishMat);dish.rotation.y=Math.PI/2;dish.position.x=-.4;dishTilt.add(dish);
+
+    /* Beam + afterglow */
+    var beamPivot=new T.Group();beamPivot.position.copy(HUB);scene.add(beamPivot);
+    var beamTilt=new T.Group();beamPivot.add(beamTilt);
+    var beamMat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,
+      uniforms:{uColor:{value:col('signal')},uOp:{value:0}},
+      vertexShader:'varying float vR;void main(){vR=length(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      fragmentShader:'uniform vec3 uColor;uniform float uOp;varying float vR;void main(){gl_FragColor=vec4(uColor,uOp*0.45*(1.0-vR/124.0));}'});
+    function wedge(vertical){var p=[],w=Math.tan(1.6*Math.PI/180);p.push(0,0,0,RR,0,vertical?0:RR*w,RR,vertical?RR*w:0,vertical?0:-RR*w);
+      p=[0,0,0,RR,vertical?RR*w:0,vertical?0:RR*w,RR,vertical?-RR*w:0,vertical?0:-RR*w];var g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));return g;}
+    beamTilt.add(new T.Mesh(wedge(false),beamMat));beamTilt.add(new T.Mesh(wedge(true),beamMat));
+    var wakePivot=new T.Group();scene.add(wakePivot);
+    var wp=[],wi=[],NA=30,NR=12,ri,ai;
+    for(ri=0;ri<=NR;ri++){for(ai=0;ai<=NA;ai++){var t=ai/NA*(55*Math.PI/180),r=ri/NR*RR;wp.push(Math.cos(t)*r,.25,Math.sin(t)*r);}}
+    for(ri=0;ri<NR;ri++){for(ai=0;ai<NA;ai++){var i0=ri*(NA+1)+ai,i1=i0+1,i2=i0+NA+1,i3=i2+1;wi.push(i0,i2,i1,i1,i2,i3);}}
+    var wg=new T.BufferGeometry();wg.setAttribute('position',new T.Float32BufferAttribute(wp,3));wg.setIndex(wi);
+    var wakeMat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,
+      uniforms:{uColor:{value:col('signal')},uOp:{value:0}},
+      vertexShader:'varying float vT,vR;void main(){vT=atan(position.z,position.x)/0.96;vR=length(position.xz);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      fragmentShader:'uniform vec3 uColor;uniform float uOp;varying float vT,vR;void main(){gl_FragColor=vec4(uColor,uOp*0.16*(1.0-clamp(vT,0.0,1.0))*(0.4+0.6*vR/120.0));}'});
+    wakePivot.add(new T.Mesh(wg,wakeMat));
+
+    /* Range rings + elevation cones */
+    var ringMat=new T.LineBasicMaterial({color:col('signal'),transparent:true,opacity:0});
+    var coneMat=new T.LineBasicMaterial({color:col('muted'),transparent:true,opacity:0});
+    function loop(r,y,mat){var p=[];for(var k=0;k<=96;k++){var a=k/96*TAU;p.push(Math.cos(a)*r,y,Math.sin(a)*r);}var g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));var l=new T.Line(g,mat);l.frustumCulled=false;scene.add(l);return l;}
+    [30,60,90,120].forEach(function(r){loop(r,.3,ringMat);});
+    var ELEV=[1.5,4,8,13].map(function(d){return d*Math.PI/180;});
+    ELEV.forEach(function(e){loop(RR,HUB.y+RR*Math.tan(e),coneMat);loop(RR/2,HUB.y+RR/2*Math.tan(e),coneMat);});
+
+    /* Storm cell */
+    var sp=[],sr=[],sc=[],n=0,h,y,rad,off,a2,rr,dn,refl,cls;
+    while(n<4200){
+      h=Math.random();y=3+h*27;rad=7+5*Math.sin(h*Math.PI);off=0;
+      if(h>.78){var k2=(h-.78)/.22;rad=9+k2*12;off=k2*9;y=3+(.78+k2*.08)*27+(Math.random()-.5)*2;}
+      a2=Math.random()*TAU;rr=rad*Math.sqrt(Math.random());dn=rr/rad;
+      x=SC.x+Math.cos(a2)*rr+off;z=SC.z+Math.sin(a2)*rr*.85;
+      refl=Math.max(0,(1-dn)*(.35+.65*Math.sin(h*Math.PI))+(Math.random()-.5)*.15);
+      if(h<.32){cls=dn<.6?1:3;}else if(h<.68){cls=dn<.4?0:(dn<.72?1:3);}else{cls=2;}
+      sp.push(x,y,z);sr.push(Math.min(1,refl));sc.push(cls);n++;
+    }
+    for(n=0;n<600;n++){a2=Math.random()*TAU;rr=5*Math.sqrt(Math.random());sp.push(SC.x+Math.cos(a2)*rr,Math.random()*3.2,SC.z+Math.sin(a2)*rr);sr.push(.55);sc.push(1);}
+    var sg=new T.BufferGeometry();sg.setAttribute('position',new T.Float32BufferAttribute(sp,3));sg.setAttribute('aRefl',new T.Float32BufferAttribute(sr,1));sg.setAttribute('aCls',new T.Float32BufferAttribute(sc,1));
+    var stormMat=new T.ShaderMaterial({transparent:true,depthWrite:false,
+      uniforms:{uTime:{value:0},uAz:{value:0},uSweep:{value:0},uOp:{value:0},uClass:{value:0},uPx:{value:PR},uC0:{value:col('signal')},uC1:{value:col('sea')},uC2:{value:col('text')},uC3:{value:col('muted')}},
+      vertexShader:['attribute float aRefl;attribute float aCls;',
+        'uniform float uTime,uAz,uSweep,uOp,uClass,uPx;uniform vec3 uC0,uC1,uC2,uC3;',
+        'varying vec3 vCol;varying float vA;',
+        'void main(){vec3 p=position;p.y+=sin(uTime*0.6+p.x*0.3+p.z*0.2)*0.2;p.x+=sin(uTime*0.4+p.y*0.25)*0.25;',
+        'float azp=atan(-p.z,p.x);float d=mod(uAz-azp,6.28318);float glow=exp(-d*2.2)*uSweep;',
+        'vec3 refC=mix(uC3,uC0,aRefl);',
+        'vec3 cc=aCls<0.5?uC0:(aCls<1.5?uC1:(aCls<2.5?uC2:uC3));',
+        'vCol=mix(refC,cc,uClass);',
+        'vA=uOp*(0.22+0.5*aRefl*(1.0-uClass)+uClass*(aCls<2.5?0.72:0.32)+glow*0.45);',
+        'vec4 mv=modelViewMatrix*vec4(p,1.0);gl_PointSize=clamp((1.5+aRefl*1.5+glow*1.4)*uPx*(170.0/-mv.z),1.0,8.0*uPx);gl_Position=projectionMatrix*mv;}'].join('\n'),
+      fragmentShader:'varying vec3 vCol;varying float vA;void main(){vec2 c=gl_PointCoord-0.5;if(dot(c,c)>0.25)discard;gl_FragColor=vec4(vCol,vA);}'});
+    var storm=new T.Points(sg,stormMat);storm.frustumCulled=false;scene.add(storm);
+
+    /* Dual-polarization waves */
+    var POLN=220,POLL=60;
+    function polLine(cn){var g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(POLN*3),3));var m=new T.LineBasicMaterial({color:col(cn),transparent:true,opacity:0});var l=new T.Line(g,m);l.frustumCulled=false;scene.add(l);l.userData.cn=cn;return l;}
+    var polH=polLine('signal'),polV=polLine('sea');
+    var POL_E=6.5*Math.PI/180;
+    var U=new T.Vector3(Math.cos(POL_E)*Math.cos(STORM_AZ),Math.sin(POL_E),-Math.cos(POL_E)*Math.sin(STORM_AZ));
+    var NH=new T.Vector3(Math.sin(STORM_AZ),0,Math.cos(STORM_AZ)),NV=new T.Vector3().crossVectors(NH,U).normalize();
+    function updatePol(time){
+      var count=Math.max(2,Math.floor(POLN*S.pol));
+      [[polH,NH],[polV,NV]].forEach(function(pair){
+        var arr=pair[0].geometry.attributes.position.array,nrm=pair[1];
+        for(var q=0;q<POLN;q++){var s=q/(POLN-1)*POLL,env=Math.min(1,s/4),amp=1.5*env*Math.sin(s*.75-time*7);
+          arr[q*3]=HUB.x+U.x*s+nrm.x*amp;arr[q*3+1]=HUB.y+U.y*s+nrm.y*amp;arr[q*3+2]=HUB.z+U.z*s+nrm.z*amp;}
+        pair[0].geometry.attributes.position.needsUpdate=true;pair[0].geometry.setDrawRange(0,count);pair[0].material.opacity=Math.min(1,S.pol*3);
+      });
+    }
+
+    /* Labels */
+    var labels=[],V=new T.Vector3();
+    function mkLabel(text,cls,p,key){var d=document.createElement('div');d.className='o3l '+(cls||'');d.textContent=text;lh.appendChild(d);labels.push({el:d,p:p,key:key});}
+    mkLabel('RMT 0200 · banda S','is-strong',new T.Vector3(0,12,0),'tower');
+    [[30,'150 km'],[60,'300 km'],[90,'450 km'],[120,'600 km']].forEach(function(rl){var a=3.6;mkLabel(rl[1],'is-signal',new T.Vector3(Math.cos(a)*rl[0],1,-Math.sin(a)*rl[0]),'rings');});
+    mkLabel('Célula convectiva · 350 km','is-strong',new T.Vector3(SC.x,36,SC.z),'storm');
+    mkLabel('Polarização horizontal (H)','is-signal',new T.Vector3().copy(HUB).addScaledVector(U,24).addScaledVector(NH,2.6),'pol');
+    mkLabel('Polarização vertical (V)','',new T.Vector3().copy(HUB).addScaledVector(U,36).addScaledVector(NV,3),'pol');
+    mkLabel('Granizo','is-signal',new T.Vector3(SC.x,16,SC.z),'cls');
+    mkLabel('Chuva','',new T.Vector3(SC.x+3,1.5,SC.z+5),'cls');
+    mkLabel('Gelo e neve','is-strong',new T.Vector3(SC.x+10,30,SC.z),'cls');
+    mkLabel('Precipitação fraca','',new T.Vector3(SC.x-12,8,SC.z+8),'cls');
+    function keyVal(k){
+      if(k==='storm'){return Math.max(0,Math.min(1,S.storm*2-1))*(1-S.cls);}
+      if(k==='pol'){return Math.max(0,Math.min(1,S.pol*2-.6));}
+      if(k==='rings'){return S.rings*(1-S.lock*.7);}
+      if(k==='tower'){return S.tower*(1-S.vol*.6);}
+      return S[k]||0;
+    }
+
+    /* Loop */
+    var W=1,H=1,mx=0,my=0,ox=0,oy=0,clock=0,lastT=performance.now(),inView=false,raf4=null,azFree=0,eIdx=0,az=0;
+    function size(){
+      W=host.clientWidth||window.innerWidth;H=host.clientHeight||window.innerHeight;var desk=W>=900;
+      renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=desk?42:60;
+      if(desk){camera.setViewOffset(W,H,W*.16,0,W,H);}else{camera.setViewOffset(W,H,0,H*.24,W,H);}
+      camera.updateProjectionMatrix();
+    }
+    function render(now){
+      now=now||performance.now();var dt=Math.min(now-lastT,50);lastT=now;
+      if(!reduce){clock+=dt/1000;var before=azFree;azFree=(azFree+dt*.0011)%TAU;if(azFree<before){eIdx=(eIdx+1)%ELEV.length;}}
+      var diff=((STORM_AZ-azFree)%TAU+TAU+Math.PI)%TAU-Math.PI;
+      az=azFree+diff*S.lock;
+      var elev=ELEV[eIdx]+(POL_E-ELEV[eIdx])*S.lock;
+      ox+=(mx-ox)*.05;oy+=(my-oy)*.05;
+      var o=S.orb+ox*.25;
+      camera.position.set(S.tx+Math.cos(o)*S.dist,S.ty+S.h+oy*S.dist*.08,S.tz+Math.sin(o)*S.dist);
+      camera.lookAt(S.tx,S.ty,S.tz);
+      groundMat.uniforms.uAz.value=az;groundMat.uniforms.uSweep.value=S.sweep*(1-S.lock);groundMat.uniforms.uReveal.value=S.ground*170;
+      towerMat.opacity=S.tower*.8;domeMat.opacity=S.tower*.5;dishMat.opacity=S.tower*.55;
+      dishPivot.rotation.y=az;dishTilt.rotation.z=elev;
+      beamPivot.rotation.y=az;beamTilt.rotation.z=elev;beamMat.uniforms.uOp.value=S.sweep;
+      wakePivot.rotation.y=az;wakeMat.uniforms.uOp.value=S.sweep*(1-S.lock);
+      ringMat.opacity=S.rings*.55;coneMat.opacity=S.vol*.5;
+      var su=stormMat.uniforms;su.uTime.value=clock;su.uAz.value=az;su.uSweep.value=S.sweep*(1-S.lock);su.uOp.value=S.storm;su.uClass.value=S.cls;
+      if(S.pol>.001){updatePol(clock);}else{polH.material.opacity=0;polV.material.opacity=0;}
+      renderer.render(scene,camera);
+      labels.forEach(function(l){
+        var v=keyVal(l.key);
+        if(v<.02){l.el.style.opacity=0;return;}
+        V.copy(l.p).project(camera);
+        if(V.z>1||V.z<-1){l.el.style.opacity=0;return;}
+        l.el.style.opacity=v.toFixed(3);
+        l.el.style.transform='translate3d('+((V.x*.5+.5)*W).toFixed(1)+'px,'+((-V.y*.5+.5)*H).toFixed(1)+'px,0) translate(8px,-50%)';
+      });
+      raf4=(inView&&!reduce)?requestAnimationFrame(render):null;
+    }
+    function kick(){if(!raf4){lastT=performance.now();raf4=requestAnimationFrame(render);}}
+    size();
+    window.addEventListener('resize',function(){size();if(!raf4){render();}});
+    if('IntersectionObserver' in window){new IntersectionObserver(function(en){inView=en[0].isIntersecting;if(inView&&!reduce){kick();}},{threshold:0}).observe(host);}else{inView=true;kick();}
+    if(fine&&!reduce){host.addEventListener('mousemove',function(e){var r=host.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=-((e.clientY-r.top)/r.height-.5);});}
+
+    themeHooks.push(function(){
+      groundMat.uniforms.uBase.value=col('muted');groundMat.uniforms.uSig.value=col('signal');
+      towerMat.color=col('text');domeMat.color=col('text');dishMat.color=col('signal');
+      beamMat.uniforms.uColor.value=col('signal');wakeMat.uniforms.uColor.value=col('signal');
+      ringMat.color=col('signal');coneMat.color=col('muted');
+      var su=stormMat.uniforms;su.uC0.value=col('signal');su.uC1.value=col('sea');su.uC2.value=col('text');su.uC3.value=col('muted');
+      polH.material.color=col('signal');polV.material.color=col('sea');
+      if(!raf4){render();}
+    });
+
+    if(!reduce){
+      ST.create({trigger:host,start:'top 75%',once:true,onEnter:function(){G.to(S,{ground:1,tower:1,sweep:1,duration:2.6,ease:'power2.out'});}});
+    }
+
+    function build(){
+      var steps=$$('.oth-step',host),rails=$$('.oth3d-rail i',host),nums=$$('.oth-stats .num',host),legend=$('.rmt-legend',host);
+      G.set(steps,{autoAlpha:0,y:0});G.set(steps[0],{autoAlpha:1});G.set(rails,{scaleY:0});G.set(legend,{autoAlpha:0});
+      var tl=G.timeline({defaults:{ease:'none'}});
+      function swap(from,to,at){tl.to(steps[from],{autoAlpha:0,y:-18,duration:.3},at).fromTo(steps[to],{autoAlpha:0,y:18},{autoAlpha:1,y:0,duration:.35,immediateRender:false},at+.25);}
+      function count(nEl,at,dur){var o={v:0},to=+nEl.getAttribute('data-to');tl.fromTo(o,{v:0},{v:to,duration:dur,ease:'power1.out',immediateRender:false,onUpdate:function(){nEl.textContent=Math.round(o.v);}},at);}
+      /* 1. orbit the radome */
+      tl.to(S,{orb:1.9,dist:15,h:3,duration:.9,ease:'sine.inOut'},0).to(rails[0],{scaleY:1,duration:.9},0);
+      /* 2. volumetric scan, wide */
+      swap(0,1,.9);
+      tl.to(S,{tx:10,ty:0,tz:-12,orb:2.5,dist:150,h:118,duration:2.3,ease:'power2.inOut'},.9)
+        .to(S,{rings:1,duration:1.2},1.4)
+        .to(S,{vol:1,duration:1},2)
+        .to(S,{storm:.55,duration:1.2},2.2)
+        .to(rails[1],{scaleY:1,duration:2.4},.9);
+      count(nums[0],1.3,1.6);
+      /* 3. dual polarization, beam locks on the storm */
+      swap(1,2,3.4);
+      tl.to(S,{tx:30,ty:11,tz:-20,orb:.97,dist:46,h:7,duration:2.2,ease:'power2.inOut'},3.4)
+        .to(S,{lock:1,vol:.25,duration:1.1,ease:'power2.inOut'},3.6)
+        .to(S,{storm:1,duration:1},4.2)
+        .to(S,{pol:1,duration:1.6},4.6)
+        .to(rails[2],{scaleY:1,duration:3.2},3.4);
+      count(nums[1],4.6,1);
+      /* 4. hydrometeor classification */
+      swap(2,3,6.8);
+      tl.to(S,{tx:SC.x+2,ty:14,tz:SC.z,orb:2.1,dist:52,h:12,duration:2.2,ease:'power2.inOut'},6.8)
+        .to(S,{pol:0,lock:0,duration:.8},6.9)
+        .to(S,{cls:1,duration:1.4},7.4)
+        .to(legend,{autoAlpha:1,duration:.6},7.6)
+        .to(S,{orb:2.9,dist:62,h:20,duration:1.6,ease:'sine.inOut'},9)
+        .to(rails[3],{scaleY:1,duration:3.8},6.8)
+        .to({},{duration:.4},10.6);
+      return tl;
+    }
+    function staticView(){
+      S.ground=1;S.tower=1;S.sweep=1;S.rings=1;S.vol=0;S.storm=1;S.lock=0;S.pol=0;S.cls=1;
+      S.tx=SC.x*.45;S.ty=8;S.tz=SC.z*.45;S.orb=1.6;S.dist=95;S.h=55;
+      finalCounters();size();render();
+    }
+    render();
+    return {build:build,staticView:staticView};
+  }
+
+  function initOth3D(){
+    var host=$('#oth3d'),cv=$('#othCanvas'),lh=$('#othLabels'),T=window.THREE;
+    function finalCounters(){$$('.oth-stats .num',host).forEach(function(n){n.textContent=n.getAttribute('data-to');});}
+    if(!T||!host||!cv){root.classList.add('no-3d');finalCounters();return null;}
+    var renderer;
+    try{renderer=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){renderer=null;}
+    if(!renderer||!renderer.getContext()){root.classList.add('no-3d');finalCounters();return null;}
+    var PR=Math.min(window.devicePixelRatio||1,2);
+    renderer.setPixelRatio(PR);renderer.setClearColor(0x000000,0);
+    var scene=new T.Scene(),camera=new T.PerspectiveCamera(42,1,.1,3000);
+    var K=.00055,RR=200,TC=.38,HALF=Math.PI/3;
+    function sy(x,z){return -K*(x*x+z*z);}
+    function coastX(z){return -.4*z+6*Math.sin(z*.03)+3*Math.sin(z*.11);}
+    function col(n){var c=colors[n]||[128,128,128];return new T.Color(c[0]/255,c[1]/255,c[2]/255);}
+    function dir(a,r,lift){var x=Math.cos(a)*r,z=Math.sin(a)*r;return new T.Vector3(x,sy(x,z)+(lift||0),z);}
+
+    var S={cx:-20,cy:300,cz:150,tx:60,ty:-6,tz:20,ocean:0,coast:0,ant:0,region:0,fan:0,fanR:0,rings:0,los:0,oth:0,wave:0,ships:0};
+
+    /* Ocean + land as a curved point field */
+    var pos=[],lnd=[],stp=2.2;
+    for(var x=-150;x<=280;x+=stp){for(var z=-240;z<=240;z+=stp){var isL=x<coastX(z);if(isL&&(Math.round(x/stp)+Math.round(z/stp))%2){continue;}pos.push(x,0,z);lnd.push(isL?1:0);}}
+    var og=new T.BufferGeometry();
+    og.setAttribute('position',new T.Float32BufferAttribute(pos,3));
+    og.setAttribute('aLand',new T.Float32BufferAttribute(lnd,1));
+    var oceanMat=new T.ShaderMaterial({transparent:true,depthWrite:false,
+      uniforms:{uTime:{value:0},uK:{value:K},uPulse:{value:new T.Vector3(-99,-99,-99)},uWave:{value:0},uFan:{value:0},uReveal:{value:0},uPx:{value:PR},uTC:{value:TC},uHalf:{value:HALF},uR:{value:RR},uBase:{value:col('muted')},uLand:{value:col('text')},uSig:{value:col('signal')}},
+      vertexShader:[
+        'attribute float aLand;',
+        'uniform float uTime,uK,uWave,uFan,uReveal,uPx,uTC,uHalf,uR;',
+        'uniform vec3 uPulse;',
+        'varying float vGlow,vLand,vA,vSec;',
+        'void main(){',
+        '  vec3 p=position;',
+        '  float d2=p.x*p.x+p.z*p.z; float r=sqrt(d2);',
+        '  float sea=1.0-aLand;',
+        '  p.y=-uK*d2+sea*(0.35*sin(p.x*0.12+uTime*0.9)+0.25*sin(p.z*0.17-uTime*0.7));',
+        '  float ang=atan(p.z,p.x)-uTC;',
+        '  float inSec=sea*step(abs(ang),uHalf)*step(r,uR);',
+        '  float g=exp(-pow((r-uPulse.x)/3.5,2.0))+exp(-pow((r-uPulse.y)/3.5,2.0))+exp(-pow((r-uPulse.z)/3.5,2.0));',
+        '  vGlow=g*inSec*uWave;',
+        '  vSec=inSec*uFan;',
+        '  vLand=aLand;',
+        '  vA=smoothstep(uReveal+24.0,uReveal-24.0,r);',
+        '  vec4 mv=modelViewMatrix*vec4(p,1.0);',
+        '  gl_PointSize=clamp((1.5+vGlow*2.2)*uPx*(230.0/-mv.z),1.0,7.0*uPx);',
+        '  gl_Position=projectionMatrix*mv;',
+        '}'].join('\n'),
+      fragmentShader:[
+        'uniform vec3 uBase,uLand,uSig;',
+        'varying float vGlow,vLand,vA,vSec;',
+        'void main(){',
+        '  vec2 c=gl_PointCoord-0.5; if(dot(c,c)>0.25) discard;',
+        '  vec3 col=mix(uBase,uLand,vLand*0.55);',
+        '  col=mix(col,uSig,clamp(vSec*0.6+vGlow,0.0,1.0));',
+        '  float a=(0.34+vLand*0.08+vSec*0.22+vGlow*0.7)*vA;',
+        '  gl_FragColor=vec4(col,a);',
+        '}'].join('\n')});
+    var ocean=new T.Points(og,oceanMat);ocean.frustumCulled=false;scene.add(ocean);
+
+    /* Line helpers */
+    var lineMats=[];
+    function lineMat(cn,max,dash){
+      var m=new T.ShaderMaterial({transparent:true,depthWrite:false,
+        uniforms:{uColor:{value:col(cn)},uOp:{value:0},uMax:{value:max},uReveal:{value:0},uDash:{value:dash?1:0}},
+        vertexShader:'attribute float aT;varying float vT;void main(){vT=aT;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+        fragmentShader:'uniform vec3 uColor;uniform float uOp,uMax,uReveal,uDash;varying float vT;void main(){if(vT>uReveal)discard;if(uDash>0.5&&fract(vT*70.0)>0.5)discard;gl_FragColor=vec4(uColor,uOp*uMax);}'});
+      m.userData.cn=cn;lineMats.push(m);return m;
+    }
+    function line(pts,ts,mat){
+      var g=new T.BufferGeometry(),arr=[];pts.forEach(function(p){arr.push(p.x,p.y,p.z);});
+      g.setAttribute('position',new T.Float32BufferAttribute(arr,3));g.setAttribute('aT',new T.Float32BufferAttribute(ts,1));
+      var l=new T.Line(g,mat);l.frustumCulled=false;scene.add(l);return l;
+    }
+
+    /* Coastline */
+    var coastMat=lineMat('text',.9),cp=[],ct=[];
+    for(var cz=-240;cz<=240;cz+=2){var cxv=coastX(cz);cp.push(new T.Vector3(cxv,sy(cxv,cz)+.3,cz));ct.push(Math.abs(cz)/240);}
+    line(cp,ct,coastMat);
+
+    /* 120° sector */
+    var fp=[],fi=[],NR=24,NA=48,ri,ai;
+    for(ri=0;ri<=NR;ri++){for(ai=0;ai<=NA;ai++){var v=dir(TC-HALF+ai/NA*2*HALF,ri/NR*RR,.15);fp.push(v.x,v.y,v.z);}}
+    for(ri=0;ri<NR;ri++){for(ai=0;ai<NA;ai++){var i0=ri*(NA+1)+ai,i1=i0+1,i2=i0+NA+1,i3=i2+1;fi.push(i0,i2,i1,i1,i2,i3);}}
+    var fg=new T.BufferGeometry();fg.setAttribute('position',new T.Float32BufferAttribute(fp,3));fg.setIndex(fi);
+    var fanMat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,
+      uniforms:{uColor:{value:col('signal')},uOp:{value:0},uReveal:{value:0}},
+      vertexShader:'varying float vR;void main(){vR=length(position.xz);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+      fragmentShader:'uniform vec3 uColor;uniform float uOp,uReveal;varying float vR;void main(){if(vR>uReveal)discard;float a=0.12-0.07*vR/200.0;float lead=smoothstep(uReveal-8.0,uReveal,vR)*0.35*step(uReveal,198.0);gl_FragColor=vec4(uColor,(a+lead)*uOp);}'});
+    var fan=new T.Mesh(fg,fanMat);fan.frustumCulled=false;scene.add(fan);
+    var edgeMat=lineMat('signal',.9);
+    [TC-HALF,TC+HALF].forEach(function(a){var p=[],t=[];for(var r=0;r<=RR;r+=4){p.push(dir(a,r,.25));t.push(r/RR);}line(p,t,edgeMat);});
+    var ringMat=lineMat('signal',.65,true),ringPts=[];
+    [50,100,150,200].forEach(function(r){var p=[],t=[];for(var i=0;i<=80;i++){p.push(dir(TC-HALF+i/80*2*HALF,r,.25));t.push(i/80);}line(p,t,ringMat);ringPts.push([r,dir(TC-HALF-.06,r,1)]);});
+
+    /* Antenna site */
+    var antMat=new T.MeshBasicMaterial({color:col('text'),transparent:true,opacity:0});
+    var antG=new T.Group();scene.add(antG);
+    var cyl=new T.CylinderGeometry(.1,.1,3.4,6),cyl2=new T.CylinderGeometry(.14,.14,5.4,6),k;
+    for(k=0;k<16;k++){var aa=k/16*Math.PI*2,m=new T.Mesh(cyl,antMat);m.position.set(-6+Math.cos(aa)*3.6,1.7,Math.sin(aa)*3.6);antG.add(m);}
+    for(k=0;k<4;k++){var m2=new T.Mesh(cyl2,antMat);m2.position.set(-13,2.7,-4.5+k*3);antG.add(m2);}
+    var arrMat=lineMat('signal',.8),ap=[],at=[];
+    for(k=0;k<=64;k++){var a3=k/64*Math.PI*2;ap.push(new T.Vector3(-6+Math.cos(a3)*5,.05,Math.sin(a3)*5));at.push(0);}
+    line(ap,at,arrMat);
+
+    /* Conventional radar line of sight (tangent to the curved sea) */
+    var mz=-14,mast=new T.Vector3(coastX(mz),0,mz);mast.y=sy(mast.x,mast.z);
+    var mastMat=new T.MeshBasicMaterial({color:col('muted'),transparent:true,opacity:0});
+    var mastMesh=new T.Mesh(new T.CylinderGeometry(.13,.13,4,6),mastMat);mastMesh.position.set(mast.x,mast.y+2,mast.z);scene.add(mastMesh);
+    var ux=Math.cos(TC),uz=Math.sin(TC),A=mast.y+4,slope=1e9,sHz=0,s;
+    for(s=1;s<=300;s++){var q=(A-sy(mast.x+ux*s,mast.z+uz*s))/s;if(q<slope){slope=q;sHz=s;}}
+    var losMat=lineMat('text',.8,true),lp=[],lt=[];
+    for(s=0;s<=260;s+=2){lp.push(new T.Vector3(mast.x+ux*s,A-slope*s,mast.z+uz*s));lt.push(s/260);}
+    line(lp,lt,losMat);
+    var hzPt=new T.Vector3(mast.x+ux*sHz,A-slope*sHz+1.5,mast.z+uz*sHz);
+    var losPt=new T.Vector3(mast.x+ux*215,A-slope*215+1.5,mast.z+uz*215);
+
+    /* OTH surface path */
+    var othMat=lineMat('signal',1),op=[],ot=[];
+    for(var r2=0;r2<=RR;r2+=2){op.push(dir(TC,r2,.75));ot.push(r2/RR);}
+    line(op,ot,othMat);
+
+    /* Labels (HTML, projected) */
+    var labels=[],V=new T.Vector3();
+    function mkLabel(text,cls,p,key){var d=document.createElement('div');d.className='o3l '+(cls||'');d.textContent=text;lh.appendChild(d);labels.push({el:d,p:p,key:key});}
+    mkLabel('Farol de Albardão (RS)','is-strong',new T.Vector3(-6,7,0),'ant');
+    mkLabel('Rio Grande do Sul','',new T.Vector3(-90,sy(-90,-80),-80),'region');
+    mkLabel('Oceano Atlântico','',dir(TC+.95,150,0),'region');
+    ringPts.forEach(function(rp){mkLabel(rp[0]+' MN','is-signal',rp[1],'rings');});
+    mkLabel('Horizonte do radar convencional','',hzPt,'los');
+    mkLabel('Linha de visada em linha reta','',losPt,'los');
+    mkLabel('OTH 0100: 200 MN','is-signal',dir(TC,200,5),'oth');
+
+    /* Ships */
+    var ships=[],ghostGeo=new T.OctahedronGeometry(1.7,0),aisGeo=new T.ConeGeometry(1.1,2.8,4),ringGeo=new T.RingGeometry(3,3.35,48);
+    [[-25,60,0],[8,110,1],[28,165,1],[-40,185,0],[45,95,1],[-10,140,0],[18,192,1],[-48,122,1]].forEach(function(d,i){
+      var a=TC+d[0]*Math.PI/180,p=dir(a,d[1],1.3),g=new T.Group();g.position.copy(p);scene.add(g);
+      var mesh,ring=null;
+      if(d[2]){
+        mesh=new T.Mesh(ghostGeo,new T.MeshBasicMaterial({color:col('signal'),wireframe:true,transparent:true}));
+        ring=new T.Mesh(ringGeo,new T.MeshBasicMaterial({color:col('signal'),transparent:true,side:T.DoubleSide,depthWrite:false}));
+        ring.rotation.x=-Math.PI/2;ring.position.y=-1.1;g.add(ring);
+        mkLabel('Sem AIS · '+d[1]+' MN','is-signal',p.clone().add(new T.Vector3(0,3.5,0)),'ship'+i);
+      } else {
+        mesh=new T.Mesh(aisGeo,new T.MeshBasicMaterial({color:col('text'),transparent:true}));
+      }
+      g.add(mesh);g.scale.setScalar(.001);
+      ships.push({g:g,mesh:mesh,ring:ring,ghost:!!d[2],i:i,base:p.y,vis:0});
+    });
+
+    function keyVal(key){
+      if(key.indexOf('ship')===0){var sh=ships[+key.slice(4)];return sh?sh.vis:0;}
+      if(key==='region'){return S.region*S.ocean;}
+      if(key==='los'){return Math.max(0,Math.min(1,S.los*1.6-.6));}
+      if(key==='oth'){return Math.max(0,Math.min(1,S.oth*1.6-.6));}
+      return S[key]||0;
+    }
+
+    /* Size / render loop */
+    var W=1,H=1,mx=0,my=0,ox=0,oy=0,clock=0,lastT=performance.now(),inView=false,raf3=null;
+    function size(){
+      W=host.clientWidth||window.innerWidth;H=host.clientHeight||window.innerHeight;var desk=W>=900;
+      renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=desk?42:60;
+      if(desk){camera.setViewOffset(W,H,-W*.16,0,W,H);}else{camera.setViewOffset(W,H,0,H*.24,W,H);}
+      camera.updateProjectionMatrix();
+    }
+    function render(now){
+      now=now||performance.now();var dt=Math.min(now-lastT,50);lastT=now;
+      if(!reduce){clock+=dt/1000;}
+      ox+=(mx-ox)*.05;oy+=(my-oy)*.05;
+      camera.position.set(S.cx+ox*6,S.cy+oy*4,S.cz);camera.lookAt(S.tx,S.ty,S.tz);
+      var u=oceanMat.uniforms;u.uTime.value=clock;u.uReveal.value=S.ocean*380;u.uWave.value=S.wave;u.uFan.value=S.fan;
+      var b=(clock*.22)%1;u.uPulse.value.set(b*230,((b+1/3)%1)*230,((b+2/3)%1)*230);
+      coastMat.uniforms.uOp.value=S.coast>0?1:0;coastMat.uniforms.uReveal.value=S.coast;
+      fanMat.uniforms.uOp.value=S.fan;fanMat.uniforms.uReveal.value=S.fanR;
+      edgeMat.uniforms.uOp.value=S.fan;edgeMat.uniforms.uReveal.value=S.fanR/RR;
+      ringMat.uniforms.uOp.value=S.rings;ringMat.uniforms.uReveal.value=Math.min(1,S.rings*1.5);
+      arrMat.uniforms.uOp.value=S.ant;antMat.opacity=S.ant;
+      var lo=Math.min(1,S.los*3);losMat.uniforms.uOp.value=lo;losMat.uniforms.uReveal.value=S.los;mastMat.opacity=lo;
+      othMat.uniforms.uOp.value=Math.min(1,S.oth*3);othMat.uniforms.uReveal.value=S.oth;
+      var n=ships.length;
+      ships.forEach(function(sh){
+        sh.vis=Math.max(0,Math.min(1,S.ships*n*1.3-sh.i));
+        sh.g.scale.setScalar(Math.max(.001,sh.vis));
+        sh.g.position.y=sh.base+Math.sin(clock*1.4+sh.i)*.35;
+        sh.mesh.rotation.y=clock*.8+sh.i;
+        if(sh.ring){var f=(clock*.7+sh.i*.37)%1;sh.ring.scale.setScalar(1+f*1.8);sh.ring.material.opacity=(1-f)*.85*sh.vis;}
+      });
+      renderer.render(scene,camera);
+      labels.forEach(function(l){
+        var o=keyVal(l.key);
+        if(o<.02){l.el.style.opacity=0;return;}
+        V.copy(l.p).project(camera);
+        if(V.z>1||V.z<-1){l.el.style.opacity=0;return;}
+        l.el.style.opacity=o.toFixed(3);
+        l.el.style.transform='translate3d('+((V.x*.5+.5)*W).toFixed(1)+'px,'+((-V.y*.5+.5)*H).toFixed(1)+'px,0) translate(8px,-50%)';
+      });
+      raf3=(inView&&!reduce)?requestAnimationFrame(render):null;
+    }
+    function kick(){if(!raf3){lastT=performance.now();raf3=requestAnimationFrame(render);}}
+    size();
+    window.addEventListener('resize',function(){size();if(!raf3){render();}});
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(en){inView=en[0].isIntersecting;if(inView&&!reduce){kick();}},{threshold:0}).observe(host);
+    } else {inView=true;kick();}
+    if(fine&&!reduce){host.addEventListener('mousemove',function(e){var r=host.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=-((e.clientY-r.top)/r.height-.5);});}
+
+    themeHooks.push(function(){
+      var u=oceanMat.uniforms;u.uBase.value=col('muted');u.uLand.value=col('text');u.uSig.value=col('signal');
+      fanMat.uniforms.uColor.value=col('signal');
+      lineMats.forEach(function(m){m.uniforms.uColor.value=col(m.userData.cn);});
+      antMat.color=col('text');mastMat.color=col('muted');
+      ships.forEach(function(sh){sh.mesh.material.color=sh.ghost?col('signal'):col('text');if(sh.ring){sh.ring.material.color=col('signal');}});
+      if(!raf3){render();}
+    });
+
+    /* Entry reveal (plays once, independent of scrub) */
+    if(!reduce){
+      ST.create({trigger:host,start:'top 75%',once:true,onEnter:function(){G.to(S,{ocean:1,coast:1,ant:1,region:1,duration:2.6,ease:'power2.out'});}});
+    }
+
+    function build(){
+      var steps=$$('.oth-step',host),rails=$$('.oth3d-rail i',host),nums=$$('.oth-stats .num',host);
+      G.set(steps,{autoAlpha:0,y:0});G.set(steps[0],{autoAlpha:1});G.set(rails,{scaleY:0});
+      var tl=G.timeline({defaults:{ease:'none'}});
+      function swap(from,to,at){tl.to(steps[from],{autoAlpha:0,y:-18,duration:.3},at).fromTo(steps[to],{autoAlpha:0,y:18},{autoAlpha:1,y:0,duration:.35,immediateRender:false},at+.25);}
+      function count(nEl,at,dur){var o={v:0},to=+nEl.getAttribute('data-to');tl.fromTo(o,{v:0},{v:to,duration:dur,ease:'power1.out',immediateRender:false,onUpdate:function(){nEl.textContent=Math.round(o.v);}},at);}
+      /* 1. top view drift */
+      tl.to(S,{cx:-10,cy:255,cz:125,duration:.8,ease:'sine.inOut'},0).to(rails[0],{scaleY:1,duration:.8},0);
+      /* 2. sector unfolds */
+      swap(0,1,.8);
+      tl.to(S,{cx:-95,cy:115,cz:150,tx:95,ty:-8,tz:25,duration:2.2,ease:'power2.inOut'},.8)
+        .to(S,{fan:1,fanR:RR,duration:1.6,ease:'power2.out'},1)
+        .to(S,{rings:1,duration:1},1.8)
+        .to(rails[1],{scaleY:1,duration:2.4},.8);
+      count(nums[1],1,1.4);count(nums[2],1.5,1.4);
+      /* 3. down to sea level: curvature */
+      swap(1,2,3.2);
+      tl.to(S,{cx:-24,cy:8,cz:-10,tx:149,ty:-14,tz:59,duration:2.2,ease:'power2.inOut'},3.2)
+        .to(S,{region:0,rings:.35,duration:.6},3.2)
+        .to(S,{los:1,duration:1.4},4.4)
+        .to(S,{oth:1,wave:1,duration:1.6},5.1)
+        .to(rails[2],{scaleY:1,duration:3.4},3.2);
+      count(nums[0],5.1,1.6);
+      /* 4. ghost ships */
+      swap(2,3,6.6);
+      tl.to(S,{cx:30,cy:55,cz:-72,tx:125,ty:-12,tz:60,duration:2,ease:'power2.inOut'},6.6)
+        .to(S,{rings:1,los:.35,duration:.6},6.8)
+        .to(S,{ships:1,duration:1.6},7.2)
+        .to(S,{cx:-60,cy:125,cz:-115,tx:105,ty:-10,tz:45,duration:1.6,ease:'power2.inOut'},8.7)
+        .to(rails[3],{scaleY:1,duration:3.7},6.6)
+        .to({},{duration:.4},10.3);
+      return tl;
+    }
+    function staticView(){
+      S.ocean=1;S.coast=1;S.ant=1;S.region=0;S.fan=1;S.fanR=RR;S.rings=1;S.los=1;S.oth=1;S.wave=1;S.ships=1;
+      S.cx=-60;S.cy=125;S.cz=-115;S.tx=105;S.ty=-10;S.tz=45;
+      root.classList.add('oth-static');finalCounters();size();render();
+    }
+    render();
+    return {build:build,staticView:staticView};
+  }
+
+  /* ---------- Portfolio ---------- */
+  var rows=$$('.prow');
+  $$('.pfilter button').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      $$('.pfilter button').forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false');});
+      var cat=btn.getAttribute('data-cat');
+      var state=hasFlip&&!reduce?window.Flip.getState(rows):null;
+      rows.forEach(function(r){r.classList.toggle('is-hidden',cat!=='all'&&r.getAttribute('data-cat')!==cat);});
+      if(state){
+        window.Flip.from(state,{duration:.6,ease:'power3.inOut',absolute:true,
+          onEnter:function(els){return G.fromTo(els,{opacity:0,y:18},{opacity:1,y:0,duration:.5,stagger:.03});},
+          onLeave:function(els){return G.to(els,{opacity:0,duration:.25});},
+          onComplete:function(){ST.refresh();}});
+      } else {ST.refresh();}
+    });
+  });
+  if(!reduce){
+    G.from(rows,{y:28,autoAlpha:0,duration:.8,ease:'power3.out',stagger:.035,scrollTrigger:{trigger:'.plist',start:'top 85%',once:true}});
+  }
+  var pv=$('.ppreview');
+  if(pv&&fine&&window.innerWidth>=900){
+    G.set(pv,{xPercent:12,yPercent:-50,scale:.92});
+    var pxTo=G.quickTo(pv,'x',{duration:.5,ease:'power3'}),pyTo=G.quickTo(pv,'y',{duration:.5,ease:'power3'});
+    var list=$('.plist');
+    list.addEventListener('mousemove',function(e){pxTo(e.clientX);pyTo(e.clientY);G.set(pv,{xPercent:e.clientX>window.innerWidth*.62?-112:12});});
+    rows.forEach(function(r){
+      r.addEventListener('mouseenter',function(){
+        $('.pv-code',pv).textContent=$('.pcode',r).textContent;
+        $('.pv-cat',pv).textContent=$('.pcat',r).textContent;
+        $('.pv-desc',pv).textContent=$('.pdesc',r).textContent;
+        G.to(pv,{autoAlpha:1,scale:1,duration:.35,ease:'power3.out',overwrite:'auto'});
+      });
+    });
+    list.addEventListener('mouseleave',function(){G.to(pv,{autoAlpha:0,scale:.92,duration:.3,overwrite:'auto'});});
+  }
+
+  /* ---------- Edge ---------- */
+  var edgeItems=$$('.edge-item');
+  edgeItems.forEach(function(it){
+    var shapes=$$('.draw',it);
+    if(reduce){return;}
+    prepDraw(shapes);
+    var tl=G.timeline({scrollTrigger:{trigger:it,start:'top 82%',once:true}});
+    tl.from($('.edge-rule',it),{scaleX:0,duration:1.1,ease:'expo.out'},0)
+      .to(shapes,{strokeDashoffset:0,duration:1.4,ease:'power2.inOut',stagger:.1},.1)
+      .from($$('h3, p',it),{y:24,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.08},.15);
+  });
+
+  /* ---------- Timeline ---------- */
+  var yearEl=$('.tl-year');
+  function setYear(y){
+    if(!yearEl||yearEl.getAttribute('data-y')===y){return;}
+    yearEl.setAttribute('data-y',y);
+    if(hasScramble&&!reduce){G.to(yearEl,{duration:.7,scrambleText:{text:y,chars:'0123456789',speed:.7},overwrite:true});}
+    else{yearEl.textContent=y;}
+  }
+  $$('.tl-item').forEach(function(item){
+    ST.create({trigger:item,start:'top 58%',end:'bottom 58%',onToggle:function(self){
+      if(self.isActive){item.classList.add('is-active');setYear(item.getAttribute('data-year'));}
+      else{item.classList.remove('is-active');}
+    }});
+  });
+  if(!reduce){
+    G.to('.tl-progress span',{scaleY:1,ease:'none',scrollTrigger:{trigger:'.tl-list',start:'top 58%',end:'bottom 58%',scrub:true}});
+  } else {G.set('.tl-progress span',{scaleY:1});$$('.tl-item').forEach(function(i){i.classList.add('is-active');});}
+
+  /* ---------- CTA + footer ---------- */
+  if(!reduce){
+    G.from('.cta-row',{y:40,autoAlpha:0,duration:1,ease:'power3.out',stagger:.1,scrollTrigger:{trigger:'.cta-rows',start:'top 85%',once:true}});
+    G.from('.cta-direct > div',{y:24,autoAlpha:0,duration:.9,ease:'power3.out',stagger:.08,scrollTrigger:{trigger:'.cta-direct',start:'top 92%',once:true}});
+    G.from('.fw span',{yPercent:105,duration:1.3,ease:'expo.out',stagger:.07,scrollTrigger:{trigger:'.fw',start:'top 95%',once:true}});
+  }
+
+  /* ---------- Magnetic + cursor ---------- */
+  if(fine&&!reduce){
+    $$('.magnetic').forEach(function(b){
+      var xTo=G.quickTo(b,'x',{duration:.5,ease:'power3'}),yTo=G.quickTo(b,'y',{duration:.5,ease:'power3'});
+      b.addEventListener('mousemove',function(e){var r=b.getBoundingClientRect();xTo((e.clientX-r.left-r.width/2)*.3);yTo((e.clientY-r.top-r.height/2)*.4);});
+      b.addEventListener('mouseleave',function(){G.to(b,{x:0,y:0,duration:.9,ease:'elastic.out(1,.4)',overwrite:'auto'});});
+    });
+    var cur=$('.cursor');
+    if(cur){
+      cur.classList.add('is-on');
+      var cx2=G.quickTo(cur,'x',{duration:.35,ease:'power3'}),cy2=G.quickTo(cur,'y',{duration:.35,ease:'power3'});
+      window.addEventListener('mousemove',function(e){cx2(e.clientX);cy2(e.clientY);});
+      document.addEventListener('mouseover',function(e){cur.classList.toggle('is-link',!!(e.target.closest&&e.target.closest('a,button')));});
+      document.addEventListener('mouseleave',function(){G.to(cur,{autoAlpha:0,duration:.2});});
+      document.addEventListener('mouseenter',function(){G.to(cur,{autoAlpha:1,duration:.2});});
+    }
+  }
+
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){ST.refresh();});}
+  window.addEventListener('load',function(){ST.refresh();});
+})();
+</script>
+</body>
+</html>
