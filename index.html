@@ -212,7 +212,7 @@ html:not(.js) .preloader{display:none}
 /* OTH 3D */
 .oth{position:relative;border-top:1px solid var(--line)}
 .oth3d{position:relative;height:100vh;height:100svh;overflow:hidden}
-#othCanvas,#rmtCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#othCanvas,#rmtCanvas,#dmeCanvas,#dbkCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .oth3d-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,var(--ground) 0%,var(--ground) 16%,transparent 50%)}
 .oth3d-labels{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .o3l{position:absolute;left:0;top:0;font-family:var(--mono);font-size:.72rem;line-height:1.2;color:var(--muted);white-space:nowrap;opacity:0;will-change:transform,opacity}
@@ -245,7 +245,7 @@ html:not(.js) .preloader{display:none}
 .no-3d .oth3d-ui,.oth-static .oth3d-ui{padding-block:96px}
 .no-3d .oth-steps,.oth-static .oth-steps{min-height:0}
 .no-3d .oth-step,.oth-static .oth-step{position:static;margin-bottom:22px}
-.no-3d #othCanvas,.no-3d #rmtCanvas,.no-3d .oth3d-scrim,.no-3d .oth3d-rail,.no-3d .oth-legend,.oth-static .oth3d-rail{display:none}
+.no-3d #othCanvas,.no-3d #rmtCanvas,.no-3d #dmeCanvas,.no-3d #dbkCanvas,.no-3d .oth3d-scrim,.no-3d .oth3d-rail,.no-3d .oth-legend,.oth-static .oth3d-rail{display:none}
 @media (max-width:899px){
   .oth3d-scrim{background:linear-gradient(0deg,var(--ground) 0%,var(--ground) 44%,transparent 70%)}
   .oth3d-ui{align-items:flex-end}
@@ -264,6 +264,7 @@ html:not(.js) .preloader{display:none}
 .oth3d.is-right .oth3d-ui{justify-content:flex-end}
 .oth3d.is-right .oth3d-rail,.oth3d.is-right .oth-legend{right:auto;left:max(24px,calc((100vw - 1240px)/2))}
 .oth-legend .sw{display:inline-block;width:10px;height:10px;border-radius:50%}
+.oth-legend .sw-line{width:18px;height:0;border-radius:0;border-top:1px dashed var(--muted)}
 .oth3d-copy .market-links{gap:18px}
 @media (max-width:899px){.oth3d.is-right .oth3d-scrim{background:linear-gradient(0deg,var(--ground) 0%,var(--ground) 44%,transparent 70%)}.oth3d.is-right .oth3d-ui{justify-content:flex-start}}
 
@@ -371,9 +372,14 @@ html:not(.js) .preloader{display:none}
 .fw span{display:inline-block}
 .footer-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:28px;font-size:.82rem;color:var(--muted)}
 
-@media (prefers-reduced-motion:reduce){
-  .pulse::after,.scroll-cue i::after{animation:none}
-}
+html.motion-reduced .pulse::after,html.motion-reduced .scroll-cue i::after{animation:none}
+.motion-toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:120;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 16px;width:min(620px,calc(100% - 32px));padding:14px 16px 14px 20px;background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 24px 50px -24px rgba(0,0,0,.5);font-size:.92rem;color:var(--text)}
+.motion-toast[hidden]{display:none}
+.motion-toast p{flex:1 1 260px;color:var(--muted);line-height:1.45}
+.motion-toast .btn{min-height:42px;padding:0 1.1em;font-size:.88rem}
+.motion-toast .mt-close{background:none;border:0;color:var(--muted);font:500 .88rem var(--body);cursor:pointer;min-height:42px;padding:0 6px;text-decoration:underline;text-underline-offset:3px}
+.motion-switch{background:none;border:0;padding:8px 0;color:var(--muted);font:inherit;font-size:.94rem;cursor:pointer;text-decoration:none}
+.motion-switch:hover{color:var(--signal)}
 </style>
 </head>
 <body>
@@ -388,6 +394,12 @@ html:not(.js) .preloader{display:none}
 
 <div class="cursor" aria-hidden="true"><span class="cursor-ring"></span></div>
 
+<div class="motion-toast" id="motionToast" role="region" aria-label="Preferência de animação" hidden>
+  <p>Seu sistema está com a opção de reduzir movimento ativada, por isso as animações estão pausadas.</p>
+  <button type="button" class="btn btn-signal" id="motionOn">Ativar animações</button>
+  <button type="button" class="mt-close" id="motionKeep">Manter reduzidas</button>
+</div>
+
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="#top" aria-label="IACIT, voltar ao início">
@@ -396,8 +408,7 @@ html:not(.js) .preloader{display:none}
     </a>
     <nav class="nav-links" aria-label="Seções da página">
       <a href="#mercados">Mercados</a>
-      <a href="#oth">Radar OTH</a>
-      <a href="#rmt">Radar RMT</a>
+      <a href="#oth">Sistemas em 3D</a>
       <a href="#produtos">Produtos</a>
       <a href="#diferenciais">Diferenciais</a>
       <a href="#trajetoria">Trajetória</a>
@@ -709,6 +720,73 @@ html:not(.js) .preloader{display:none}
     </div>
   </section>
 
+  <!-- DME 0200 (3D) -->
+  <section class="oth" id="dme" aria-labelledby="dmeTitle">
+    <div class="oth3d" id="dme3d">
+      <canvas id="dmeCanvas" aria-hidden="true"></canvas>
+      <div class="oth3d-scrim" aria-hidden="true"></div>
+      <div class="oth3d-labels" id="dmeLabels" aria-hidden="true"></div>
+      <div class="wrap oth3d-ui">
+        <div class="oth3d-copy">
+          <span class="tagline">DME 0200 · Distance Measuring Equipment</span>
+          <h2 class="h2" id="dmeTitle" data-split>A distância exata, mesmo sem satélite.</h2>
+          <div class="oth-steps">
+            <div class="oth-step"><span class="mono">01 / 04</span><h3>Uma estação 100% nacional</h3><p>O DME 0200 foi o primeiro equipamento nacional certificado pelo ICEA. Feito para operar sem assistência em locais remotos, com transponder e monitor simples ou duplos, RF em estado sólido e processamento em FPGA.</p></div>
+            <div class="oth-step"><span class="mono">02 / 04</span><h3>Pergunta e resposta em pulsos</h3><p>A aeronave interroga a estação e o transponder responde. A diferença de tempo entre a interrogação e a resposta é convertida em distância, apresentada em milhas náuticas.</p></div>
+            <div class="oth-step"><span class="mono">03 / 04</span><h3>DME/DME: posição pelo cruzamento</h3><p>Com as distâncias de duas ou mais estações, a aeronave calcula a própria posição. A IACIT é a responsável pela cobertura DME/DME no Brasil, implantada pelo DECEA com a FAB.</p></div>
+            <div class="oth-step"><span class="mono">04 / 04</span><h3>Navegação PBN, mesmo sem GNSS</h3><p>Rotas baseadas em performance com uma referência em solo independente de satélites: o DME 0200 atua como backup da navegação GNSS e reforça a autonomia do espaço aéreo brasileiro.</p></div>
+          </div>
+          <dl class="oth-stats">
+            <div><dt>1º certificado nacional do ICEA</dt><dd>2015</dd></div>
+            <div><dt>Equipamentos entregues à FAB</dt><dd><span class="num" data-to="25">0</span><small>+</small></dd></div>
+            <div><dt>Classificação</dt><dd>PED</dd></div>
+          </dl>
+          <div class="market-links">
+            <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Falar com especialista</a>
+            <a class="textlink" href="https://www.iacit.com.br/produtos/cnsatn/dme-0200" target="_blank" rel="noopener">Ficha do DME 0200 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="oth3d-rail" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+    </div>
+  </section>
+
+  <!-- DRONEBlocker (3D) -->
+  <section class="oth" id="droneblocker" aria-labelledby="dbkTitle">
+    <div class="oth3d is-right" id="dbk3d">
+      <canvas id="dbkCanvas" aria-hidden="true"></canvas>
+      <div class="oth3d-scrim" aria-hidden="true"></div>
+      <div class="oth3d-labels" id="dbkLabels" aria-hidden="true"></div>
+      <div class="wrap oth3d-ui">
+        <div class="oth3d-copy">
+          <span class="tagline">Sistema Antidrone DRONEBlocker</span>
+          <h2 class="h2" id="dbkTitle" data-split>Drones não autorizados não passam.</h2>
+          <div class="oth-steps">
+            <div class="oth-step"><span class="mono">01 / 04</span><h3>Um escudo eletrônico de 360°</h3><p>O DRONEBlocker cria uma área de proteção em torno de eventos, autoridades e infraestruturas críticas. Já protegeu os Jogos Rio 2016, a Cúpula do G20 e a COP30.</p></div>
+            <div class="oth-step"><span class="mono">02 / 04</span><h3>Detecção multissensor</h3><p>No modo integrado, radares, câmeras e sensores acústicos e de RF detectam a ameaça e acionam o bloqueio automaticamente. O sistema também opera em modo manual.</p></div>
+            <div class="oth-step"><span class="mono">03 / 04</span><h3>Enxames, não só drones isolados</h3><p>Com bloqueio omnidirecional, não há limite para o número de drones que se aproximam ao mesmo tempo, vindos de qualquer direção.</p></div>
+            <div class="oth-step"><span class="mono">04 / 04</span><h3>Vínculo cortado, sem queda</h3><p>O bloqueio de radiofrequência interrompe o vínculo entre o drone e o operador. A perda de sinal força o pouso controlado ou o retorno automático ao ponto de origem, sem derrubar a aeronave.</p></div>
+          </div>
+          <dl class="oth-stats">
+            <div><dt>Cobertura de bloqueio</dt><dd><span class="num" data-to="360">0</span><small>graus</small></dd></div>
+            <div><dt>Sistemas no SISFRON</dt><dd><span class="num" data-to="10">0</span><small>Exército</small></dd></div>
+            <div><dt>Em operação desde</dt><dd>2016<small>Rio 2016</small></dd></div>
+          </dl>
+          <div class="market-links">
+            <a class="btn btn-signal magnetic" href="https://www.iacit.com.br/contato" target="_blank" rel="noopener">Solicitar demonstração</a>
+            <a class="textlink" href="https://www.iacit.com.br/produtos/defesa/droneblocker" target="_blank" rel="noopener">Ficha do DRONEBlocker <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="oth3d-rail" aria-hidden="true"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+      <div class="oth-legend" aria-hidden="true">
+        <span><i class="sw" style="background:var(--signal)"></i>Drone rastreado</span>
+        <span><i class="sw" style="background:var(--muted)"></i>Drone neutralizado</span>
+        <span><i class="sw sw-line"></i>Vínculo com o operador</span>
+      </div>
+    </div>
+  </section>
+
   <!-- PORTFOLIO -->
   <section class="portfolio" id="produtos" aria-labelledby="pfTitle">
     <div class="wrap">
@@ -842,6 +920,7 @@ html:not(.js) .preloader{display:none}
         <li><a href="https://www.youtube.com/channel/UC0_uMnZX6Ebi0cRfnhb5BDg" target="_blank" rel="noopener">YouTube</a></li>
         <li><a href="https://www.instagram.com/iacit_/" target="_blank" rel="noopener">Instagram</a></li>
         <li><a href="https://www.iacit.com.br/trabalhe-conosco" target="_blank" rel="noopener">Trabalhe conosco</a></li>
+        <li><button type="button" class="motion-switch" id="motionSwitch">Animações: ligadas</button></li>
       </ul>
     </div>
     <div class="fw" aria-hidden="true"><span>I</span><span>A</span><span>C</span><span>I</span><span>T</span></div>
@@ -865,7 +944,20 @@ html:not(.js) .preloader{display:none}
   var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
   var root = document.documentElement;
   var NS = 'http://www.w3.org/2000/svg';
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var osReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motionPref = null;
+  try{motionPref=localStorage.getItem('iacit-motion');}catch(e){}
+  var reduce = motionPref==='on' ? false : (motionPref==='off' ? true : osReduce);
+  root.classList.toggle('motion-reduced',reduce);
+  (function(){
+    function setPref(v){try{localStorage.setItem('iacit-motion',v);}catch(e){}window.location.reload();}
+    var toast=document.getElementById('motionToast'),sw=document.getElementById('motionSwitch');
+    if(toast&&osReduce&&!motionPref){toast.hidden=false;}
+    var on=document.getElementById('motionOn'),keep=document.getElementById('motionKeep');
+    if(on){on.addEventListener('click',function(){setPref('on');});}
+    if(keep){keep.addEventListener('click',function(){try{localStorage.setItem('iacit-motion','off');}catch(e){}toast.hidden=true;});}
+    if(sw){sw.textContent=reduce?'Animações: reduzidas (ativar)':'Animações: ligadas (reduzir)';sw.addEventListener('click',function(){setPref(reduce?'on':'off');});}
+  })();
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var G = window.gsap;
 
@@ -1116,15 +1208,18 @@ html:not(.js) .preloader{display:none}
   }
 
   /* ---------- OTH 3D ---------- */
-  var oth3=initOth3D();
-  var rmt3=initRmt3D();
+  function safeInit(fn,name){try{return fn();}catch(e){if(window.console){console.error('[IACIT] cena '+name+' desativada:',e);}return null;}}
+  var oth3=safeInit(initOth3D,'OTH');
+  var rmt3=safeInit(initRmt3D,'RMT');
+  var dme3=safeInit(initDme3D,'DME');
+  var dbk3=safeInit(initDbk3D,'DRONEBlocker');
 
   /* ---------- Responsive scenes ---------- */
   var mm=G.matchMedia();
-  mm.add({desk:'(min-width: 900px)',mob:'(max-width: 899px)',rm:'(prefers-reduced-motion: reduce)'},function(context){
+  mm.add({desk:'(min-width: 900px)',mob:'(max-width: 899px)'},function(context){
     var c=context.conditions;
     var panels=$$('.market');
-    if(c.rm){if(oth3){oth3.staticView();}if(rmt3){rmt3.staticView();}return;}
+    if(reduce){if(oth3){oth3.staticView();}if(rmt3){rmt3.staticView();}if(dme3){dme3.staticView();}if(dbk3){dbk3.staticView();}return;}
 
     if(c.desk){
       var track=$('.markets-track');
@@ -1150,7 +1245,367 @@ html:not(.js) .preloader{display:none}
       var r3=rmt3.build();
       ST.create({trigger:'#rmt3d',start:'top top',end:c.desk?'+=440%':'+=340%',pin:true,scrub:1.2,animation:r3,anticipatePin:1});
     }
+    if(dme3){ST.create({trigger:'#dme3d',start:'top top',end:c.desk?'+=400%':'+=320%',pin:true,scrub:1.2,animation:dme3.build(),anticipatePin:1});}
+    if(dbk3){ST.create({trigger:'#dbk3d',start:'top top',end:c.desk?'+=400%':'+=320%',pin:true,scrub:1.2,animation:dbk3.build(),anticipatePin:1});}
   });
+
+  /* ---------- Shared base for DME / DRONEBlocker scenes ---------- */
+  function base3D(hs,cs,ls,right){
+    var host=$(hs),cv=$(cs),lh=$(ls),T=window.THREE;
+    function finalCounters(){$$('.oth-stats .num',host).forEach(function(n){n.textContent=n.getAttribute('data-to');});}
+    if(!T||!host||!cv||root.classList.contains('no-3d')){finalCounters();return null;}
+    var renderer;
+    try{renderer=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){renderer=null;}
+    if(!renderer||!renderer.getContext()){finalCounters();return null;}
+    var PR=Math.min(window.devicePixelRatio||1,2);renderer.setPixelRatio(PR);renderer.setClearColor(0x000000,0);
+    var B={T:T,host:host,renderer:renderer,scene:new T.Scene(),camera:new T.PerspectiveCamera(42,1,.1,4000),labels:[],tints:[],themeFns:[],clock:0,ox:0,oy:0,finalCounters:finalCounters,update:function(){},keyVal:function(){return 0;}};
+    B.col=function(n){var c=colors[n]||[128,128,128];return new T.Color(c[0]/255,c[1]/255,c[2]/255);};
+    B.tint=function(m,n){m.color=B.col(n);B.tints.push([m,n]);return m;};
+    B.basic=function(n,o){o=o||{};o.transparent=true;var m=new T.MeshBasicMaterial(o);return B.tint(m,n);};
+    B.lineMat=function(n,dashed){var m=dashed?new T.LineDashedMaterial({dashSize:1.4,gapSize:1.4,transparent:true,opacity:0}):new T.LineBasicMaterial({transparent:true,opacity:0});return B.tint(m,n);};
+    B.line=function(pts,mat,loop){var g=new T.BufferGeometry().setFromPoints(pts);var l=new (loop?T.LineLoop:T.Line)(g,mat);l.frustumCulled=false;if(mat.isLineDashedMaterial){l.computeLineDistances();}B.scene.add(l);return l;};
+    B.segs=function(pts,mat){var l=new T.LineSegments(new T.BufferGeometry().setFromPoints(pts),mat);l.frustumCulled=false;B.scene.add(l);return l;};
+    B.setLine=function(l,a,b){var p=l.geometry.attributes.position;p.setXYZ(0,a.x,a.y,a.z);p.setXYZ(1,b.x,b.y,b.z);p.needsUpdate=true;if(l.material.isLineDashedMaterial){l.computeLineDistances();}};
+    B.mkLabel=function(text,cls,p,key){var d=document.createElement('div');d.className='o3l '+(cls||'');d.textContent=text;lh.appendChild(d);var L={el:d,p:p,key:key};B.labels.push(L);return L;};
+    B.orbitCam=function(S,tx,ty,tz){var o=S.orb+B.ox*.25;B.camera.position.set(tx+Math.cos(o)*S.dist,ty+S.h+B.oy*S.dist*.08,tz+Math.sin(o)*S.dist);B.camera.lookAt(tx,ty,tz);};
+    B.prepTimeline=function(){
+      var steps=$$('.oth-step',host),rails=$$('.oth3d-rail i',host),nums=$$('.oth-stats .num',host),legend=$('.oth-legend',host);
+      G.set(steps,{autoAlpha:0,y:0});G.set(steps[0],{autoAlpha:1});G.set(rails,{scaleY:0});if(legend){G.set(legend,{autoAlpha:0});}
+      var tl=G.timeline({defaults:{ease:'none'}});
+      return {tl:tl,rails:rails,legend:legend,
+        swap:function(a,b,at){tl.to(steps[a],{autoAlpha:0,y:-18,duration:.3},at).fromTo(steps[b],{autoAlpha:0,y:18},{autoAlpha:1,y:0,duration:.35,immediateRender:false},at+.25);},
+        count:function(i,at,dur){var nEl=nums[i];if(!nEl){return;}var o={v:0},to=+nEl.getAttribute('data-to');tl.fromTo(o,{v:0},{v:to,duration:dur,ease:'power1.out',immediateRender:false,onUpdate:function(){nEl.textContent=Math.round(o.v);}},at);}};
+    };
+    var W=1,H=1,mx=0,my=0,lastT=performance.now(),inView=false,raf=null,V=new T.Vector3();
+    function size(){W=host.clientWidth||window.innerWidth;H=host.clientHeight||window.innerHeight;var desk=W>=900,cam=B.camera;renderer.setSize(W,H,false);cam.aspect=W/H;cam.fov=desk?42:60;if(desk){cam.setViewOffset(W,H,(right?1:-1)*W*.16,0,W,H);}else{cam.setViewOffset(W,H,0,H*.24,W,H);}cam.updateProjectionMatrix();}
+    function render(now){
+      now=now||performance.now();var dt=Math.min(now-lastT,50);lastT=now;if(!reduce){B.clock+=dt/1000;}
+      B.ox+=(mx-B.ox)*.05;B.oy+=(my-B.oy)*.05;
+      B.update(dt);
+      renderer.render(B.scene,B.camera);
+      B.labels.forEach(function(l){
+        var v=B.keyVal(l.key);
+        if(!(v>.02)){l.el.style.opacity=0;return;}
+        V.copy(l.p).project(B.camera);
+        if(V.z>1||V.z<-1){l.el.style.opacity=0;return;}
+        l.el.style.opacity=Math.min(1,v).toFixed(3);
+        l.el.style.transform='translate3d('+((V.x*.5+.5)*W).toFixed(1)+'px,'+((-V.y*.5+.5)*H).toFixed(1)+'px,0) translate(8px,-50%)';
+      });
+      raf=(inView&&!reduce)?requestAnimationFrame(render):null;
+    }
+    B.render=render;B.size=size;
+    B.start=function(){
+      size();
+      window.addEventListener('resize',function(){size();if(!raf){render();}});
+      if('IntersectionObserver' in window){new IntersectionObserver(function(en){inView=en[0].isIntersecting;if(inView&&!reduce&&!raf){lastT=performance.now();raf=requestAnimationFrame(render);}},{threshold:0}).observe(host);}else{inView=true;raf=requestAnimationFrame(render);}
+      if(fine&&!reduce){host.addEventListener('mousemove',function(e){var r=host.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=-((e.clientY-r.top)/r.height-.5);});}
+      themeHooks.push(function(){B.tints.forEach(function(t){t[0].color=B.col(t[1]);});B.themeFns.forEach(function(f){f();});if(!raf){render();}});
+      render();
+    };
+    return B;
+  }
+  function smooth(t){t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);}
+  function clamp01(t){return Math.max(0,Math.min(1,t));}
+
+  /* ---------- DME 0200 ---------- */
+  function initDme3D(){
+    var B=base3D('#dme3d','#dmeCanvas','#dmeLabels',false);if(!B){return null;}
+    var T=B.T,scene=B.scene,V3=T.Vector3,x,z,i;
+    var S={tx:0,ty:5,tz:0,orb:.6,dist:28,h:9,follow:0,ground:0,site:0,fly:.14,pulse:0,multi:0,fix:0,route:0,sat:0,gnssOff:0};
+
+    var gp=[];for(x=-200;x<=200;x+=3){for(z=-200;z<=200;z+=3){gp.push(new V3(x,.35*Math.sin(x*.05)*Math.cos(z*.045),z));}}
+    var groundMat=B.tint(new T.PointsMaterial({size:.5,transparent:true,opacity:0,depthWrite:false}),'muted');
+    var gpts=new T.Points(new T.BufferGeometry().setFromPoints(gp),groundMat);gpts.frustumCulled=false;scene.add(gpts);
+
+    /* runway */
+    var rwMat=B.lineMat('text'),rwDash=B.lineMat('text',true);
+    (function(){var c=new V3(28,.2,16),a=.35,L=34,Wd=2.2,ux=Math.cos(a),uz=-Math.sin(a),px=-uz,pz=ux;
+      function P(s,t){return new V3(c.x+ux*s+px*t,.25,c.z+uz*s+pz*t);}
+      B.line([P(-L/2,-Wd),P(L/2,-Wd),P(L/2,Wd),P(-L/2,Wd)],rwMat,true);B.line([P(-L/2+2,0),P(L/2-2,0)],rwDash);})();
+
+    /* stations */
+    var siteMat=B.basic('text',{opacity:0}),siteEdge=B.lineMat('text'),antMat=B.basic('signal',{opacity:0});
+    var secMat=B.basic('text',{opacity:0}),secEdge=B.lineMat('text'),secAnt=B.basic('signal',{opacity:0});
+    var boxEdges=new T.EdgesGeometry(new T.BoxGeometry(3,2.2,2.4)),mastG=new T.CylinderGeometry(.16,.24,8,6),antG=new T.CylinderGeometry(.45,.45,2.2,12),flashG=new T.SphereGeometry(1.6,12,8);
+    function station(sx,sz,m,e,a){var g=new T.Group();g.position.set(sx,0,sz);var sh=new T.LineSegments(boxEdges,e);sh.position.set(-2.4,1.1,0);g.add(sh);var ms=new T.Mesh(mastG,m);ms.position.y=4;g.add(ms);var an=new T.Mesh(antG,a);an.position.y=9.1;g.add(an);var fm=B.basic('signal',{opacity:0,wireframe:true,depthWrite:false});var fl=new T.Mesh(flashG,fm);fl.position.y=9.1;g.add(fl);scene.add(g);return {top:new V3(sx,9.1,sz),flash:fm};}
+    var stA=station(0,0,siteMat,siteEdge,antMat),stB=station(-95,-55,secMat,secEdge,secAnt),stC=station(70,-110,secMat,secEdge,secAnt);
+
+    /* aircraft */
+    var acMat=B.basic('text',{opacity:0}),acLight=B.basic('signal',{opacity:0});
+    var ac=new T.Group();
+    var fus=new T.Mesh(new T.CylinderGeometry(.6,.6,9,10),acMat);fus.rotation.x=Math.PI/2;ac.add(fus);
+    var nose=new T.Mesh(new T.ConeGeometry(.6,2,10),acMat);nose.rotation.x=Math.PI/2;nose.position.z=5.5;ac.add(nose);
+    var tail=new T.Mesh(new T.ConeGeometry(.6,1.8,10),acMat);tail.rotation.x=-Math.PI/2;tail.position.z=-5.4;ac.add(tail);
+    var wing=new T.Mesh(new T.BoxGeometry(11,.14,2.2),acMat);wing.position.z=.4;ac.add(wing);
+    var ht=new T.Mesh(new T.BoxGeometry(4.2,.12,1.2),acMat);ht.position.z=-4.8;ac.add(ht);
+    var vt=new T.Mesh(new T.BoxGeometry(.14,2.1,1.5),acMat);vt.position.set(0,1.1,-4.9);ac.add(vt);
+    [-5.5,5.5].forEach(function(wx){var l=new T.Mesh(new T.SphereGeometry(.3,8,6),acLight);l.position.set(wx,0,.4);ac.add(l);});
+    ac.scale.setScalar(1.3);scene.add(ac);
+
+    /* PBN route */
+    var curve=new T.CatmullRomCurve3([new V3(-160,22,75),new V3(-100,24,45),new V3(-40,24,30),new V3(15,23,36),new V3(75,22,8),new V3(135,20,-40),new V3(175,19,-95)]);
+    var routePts=curve.getPoints(240),routeMat=B.lineMat('signal'),routeLine=B.line(routePts,routeMat);
+    var wpMat=B.basic('signal',{opacity:0,wireframe:true}),wps=[];
+    curve.points.forEach(function(p,k){if(k%2===0){var w=new T.Mesh(new T.OctahedronGeometry(1.2,0),wpMat);w.position.copy(p);scene.add(w);wps.push(w);}});
+
+    /* interrogation / reply links */
+    var pulseG=new T.SphereGeometry(.55,10,8);
+    function link(st,off){var L={st:st,off:off,iq:[],rp:[],mi:B.basic('text',{opacity:0,depthWrite:false}),mr:B.basic('signal',{opacity:0,depthWrite:false}),ml:B.lineMat('muted',true)};
+      for(var k=0;k<2;k++){var a=new T.Mesh(pulseG,L.mi),b=new T.Mesh(pulseG,L.mr);scene.add(a);scene.add(b);L.iq.push(a);L.rp.push(b);}
+      L.line=B.line([new V3(),new V3(1,0,0)],L.ml);return L;}
+    var links=[link(stA,0),link(stB,.33),link(stC,.66)];
+    var acPos=new V3(),fwd=new V3();
+    function updLink(L,a){
+      L.ml.opacity=.55*a;B.setLine(L.line,acPos,L.st.top);
+      var ph=(B.clock*.55+L.off)%1,showI=0,showR=0,ti=0,tr=0,fl=0;
+      if(ph<.42){showI=1;ti=ph/.42;}else if(ph<.52){fl=1-(ph-.42)/.1;}else{showR=1;tr=(ph-.52)/.48;}
+      for(var k=0;k<2;k++){var d=k*.035;L.iq[k].position.lerpVectors(acPos,L.st.top,Math.max(0,ti-d));L.rp[k].position.lerpVectors(L.st.top,acPos,Math.max(0,tr-d));}
+      L.mi.opacity=showI*a;L.mr.opacity=showR*a;L.st.flash.opacity=fl*.7*a;
+    }
+
+    /* DME/DME fix */
+    var circ=[];for(i=0;i<=72;i++){var aa=i/72*Math.PI*2;circ.push(new V3(Math.cos(aa),0,Math.sin(aa)));}
+    var fixMat=B.lineMat('signal');
+    var rings=[stA,stB,stC].map(function(st){var l=B.line(circ,fixMat,true);l.position.set(st.top.x,.3,st.top.z);return l;});
+    var cross=B.lineMat('signal'),fixG=new T.Group();scene.add(fixG);
+    fixG.add(new T.LineSegments(new T.BufferGeometry().setFromPoints([new V3(-4,0,0),new V3(4,0,0),new V3(0,0,-4),new V3(0,0,4)]),cross));
+    var fixRing=new T.LineLoop(new T.BufferGeometry().setFromPoints(circ),cross);fixRing.scale.setScalar(2.4);fixG.add(fixRing);
+    var dropMat=B.lineMat('signal',true),drop=B.line([new V3(),new V3(0,1,0)],dropMat);
+
+    /* GNSS satellite */
+    var satG=new T.Group();satG.position.set(120,62,-20);scene.add(satG);
+    var satMat=B.basic('text',{opacity:0,wireframe:true}),satPanel=B.basic('muted',{opacity:0});
+    satG.add(new T.Mesh(new T.BoxGeometry(3,3,3),satMat));
+    [-6,6].forEach(function(px){var p=new T.Mesh(new T.BoxGeometry(7,.12,2.6),satPanel);p.position.x=px;satG.add(p);});
+    var gnssMat=B.lineMat('text',true),gnssLine=B.line([new V3(),new V3(0,1,0)],gnssMat);
+
+    /* labels */
+    B.mkLabel('Estação DME 0200','is-strong',new V3(0,12.5,0),'site');
+    B.mkLabel('Aeródromo','',new V3(28,1.5,16),'site');
+    var slantP=new V3(),lSlant=B.mkLabel('','is-signal',slantP,'pulse');
+    B.mkLabel('Estação DME','',new V3(stB.top.x,12.5,stB.top.z),'multi');
+    B.mkLabel('Estação DME','',new V3(stC.top.x,12.5,stC.top.z),'multi');
+    var fixP=new V3();B.mkLabel('Posição DME/DME','is-signal',fixP,'fix');
+    B.mkLabel('Rota PBN','is-signal',curve.getPoint(.8).add(new V3(0,4,0)),'route');
+    B.mkLabel('GNSS indisponível','',new V3(120,67,-20),'gnss');
+    B.keyVal=function(k){
+      if(k==='site'){return S.site*(1-S.multi*.6);}
+      if(k==='pulse'){return S.pulse*(1-S.fix*.7);}
+      if(k==='fix'){return S.fix*(1-S.route*.4);}
+      if(k==='gnss'){return S.gnssOff;}
+      return S[k]||0;
+    };
+
+    B.update=function(){
+      var f=Math.min(.995,Math.max(0,S.fly));curve.getPoint(f,acPos);curve.getPoint(Math.min(1,f+.004),fwd);
+      acPos.y+=Math.sin(B.clock*1.1)*.25;ac.position.copy(acPos);ac.lookAt(fwd.x,acPos.y,fwd.z);
+      var tx=S.tx+(acPos.x-S.tx)*S.follow,ty=S.ty+(acPos.y-S.ty)*S.follow,tz=S.tz+(acPos.z-S.tz)*S.follow;
+      B.orbitCam(S,tx,ty,tz);
+      groundMat.opacity=.55*S.ground;
+      siteMat.opacity=S.site;siteEdge.opacity=S.site*.9;antMat.opacity=S.site;rwMat.opacity=S.site*.7;rwDash.opacity=S.site*.5;
+      acMat.opacity=Math.min(1,S.site*1.5);acLight.opacity=(.5+.5*Math.sin(B.clock*6))*acMat.opacity;
+      secMat.opacity=S.multi;secEdge.opacity=S.multi*.9;secAnt.opacity=S.multi;
+      updLink(links[0],Math.max(S.pulse,S.multi*.8));updLink(links[1],S.multi);updLink(links[2],S.multi);
+      var d=acPos.distanceTo(stA.top);lSlant.el.textContent='Distância medida: '+d.toFixed(1).replace('.',',')+' NM';
+      slantP.lerpVectors(acPos,stA.top,.5);slantP.y+=2;
+      [stA,stB,stC].forEach(function(st,k){var r=Math.max(.1,Math.hypot(acPos.x-st.top.x,acPos.z-st.top.z));rings[k].scale.set(r,1,r);});
+      fixMat.opacity=S.fix*.55;cross.opacity=S.fix;fixG.position.set(acPos.x,.4,acPos.z);dropMat.opacity=S.fix*.7;B.setLine(drop,acPos,fixG.position);fixP.set(acPos.x,2,acPos.z);
+      routeMat.opacity=S.route*.85;routeLine.geometry.setDrawRange(0,Math.floor(routePts.length*S.route));wpMat.opacity=S.route*.8;
+      wps.forEach(function(w,k){w.rotation.y=B.clock+k;});
+      satMat.opacity=S.sat*(1-S.gnssOff*.6);satPanel.opacity=S.sat*.8*(1-S.gnssOff*.5);satG.rotation.y=B.clock*.2;
+      gnssMat.opacity=S.sat*(1-S.gnssOff)*.75;B.setLine(gnssLine,satG.position,acPos);
+    };
+
+    if(!reduce){ST.create({trigger:B.host,start:'top 75%',once:true,onEnter:function(){G.to(S,{ground:1,site:1,duration:2.4,ease:'power2.out'});}});}
+    function build(){
+      var P=B.prepTimeline(),tl=P.tl;
+      tl.to(S,{orb:1.5,dist:24,h:7,fly:.2,duration:.9,ease:'sine.inOut'},0).to(P.rails[0],{scaleY:1,duration:.9},0);
+      P.swap(0,1,.9);
+      tl.to(S,{tx:-40,ty:12,tz:20,orb:1.35,dist:105,h:28,duration:2.2,ease:'power2.inOut'},.9)
+        .to(S,{pulse:1,duration:.8},1.6).to(S,{fly:.34,duration:2.4},.9).to(P.rails[1],{scaleY:1,duration:2.4},.9);
+      P.swap(1,2,3.4);
+      tl.to(S,{tx:-15,ty:0,tz:-20,orb:1.2,dist:200,h:160,duration:2.2,ease:'power2.inOut'},3.4)
+        .to(S,{multi:1,duration:1},3.9).to(S,{fix:1,duration:1},4.8).to(S,{fly:.5,duration:3},3.4).to(P.rails[2],{scaleY:1,duration:3.2},3.4);
+      P.count(0,4,1.4);
+      P.swap(2,3,6.8);
+      tl.to(S,{follow:1,orb:2.5,dist:48,h:14,duration:1.8,ease:'power2.inOut'},6.8)
+        .to(S,{fix:.25,duration:.6},6.8)
+        .to(S,{route:1,duration:1.6},7)
+        .to(S,{sat:1,duration:.6},7.4).to(S,{gnssOff:1,duration:.8},8.4)
+        .to(S,{fly:.86,duration:3.4},6.8)
+        .to(S,{orb:3.2,dist:72,h:26,duration:1.4,ease:'sine.inOut'},8.9)
+        .to(P.rails[3],{scaleY:1,duration:3.6},6.8).to({},{duration:.4},10.4);
+      return tl;
+    }
+    function staticView(){
+      S.ground=1;S.site=1;S.pulse=1;S.multi=1;S.fix=1;S.route=1;S.sat=0;S.fly=.5;S.follow=0;
+      S.tx=-15;S.ty=0;S.tz=-20;S.orb=1.2;S.dist=200;S.h=160;
+      B.finalCounters();B.size();B.render();
+    }
+    B.start();
+    return {build:build,staticView:staticView};
+  }
+
+  /* ---------- DRONEBlocker ---------- */
+  function initDbk3D(){
+    var B=base3D('#dbk3d','#dbkCanvas','#dbkLabels',true);if(!B){return null;}
+    var T=B.T,scene=B.scene,V3=T.Vector3,x,z,i,k,a,TAU=Math.PI*2;
+    var S={tx:0,ty:6,tz:0,orb:.8,dist:115,h:55,ground:0,venue:0,dome:0,lead:0,sens:0,swarm:0,lock:0,jam:0,neut:0};
+
+    var gp=[];for(x=-210;x<=210;x+=3){for(z=-210;z<=210;z+=3){gp.push(new V3(x,0,z));}}
+    var groundMat=B.tint(new T.PointsMaterial({size:.5,transparent:true,opacity:0,depthWrite:false}),'muted');
+    var gpts=new T.Points(new T.BufferGeometry().setFromPoints(gp),groundMat);gpts.frustumCulled=false;scene.add(gpts);
+
+    /* venue (stadium) */
+    var vMat=B.lineMat('text'),vMat2=B.lineMat('muted');
+    function ell(rx,rz,y){var p=[];for(var q=0;q<=96;q++){var t=q/96*TAU;p.push(new V3(Math.cos(t)*rx,y,Math.sin(t)*rz));}return p;}
+    B.line(ell(30,20,.2),vMat,true);B.line(ell(35,25,3),vMat2,true);B.line(ell(40,30,6.5),vMat2,true);B.line(ell(44,34,9),vMat,true);
+    var sp=[];for(k=0;k<36;k++){a=k/36*TAU;sp.push(new V3(Math.cos(a)*30,.2,Math.sin(a)*20),new V3(Math.cos(a)*44,9,Math.sin(a)*34));}
+    B.segs(sp,vMat2);
+    B.segs([new V3(-18,.2,-10),new V3(18,.2,-10),new V3(18,.2,-10),new V3(18,.2,10),new V3(18,.2,10),new V3(-18,.2,10),new V3(-18,.2,10),new V3(-18,.2,-10),new V3(0,.2,-10),new V3(0,.2,10)],vMat2);
+
+    /* DRONEBlocker unit */
+    var uMat=B.basic('text',{opacity:0}),uEdge=B.lineMat('text'),uAnt=B.basic('signal',{opacity:0});
+    B.segs([new V3(-1.6,0,-1.2),new V3(0,3,0),new V3(1.6,0,-1.2),new V3(0,3,0),new V3(0,0,1.8),new V3(0,3,0)],uEdge);
+    var cs=new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(2.6,1.2,1.7)),uEdge);cs.position.set(3.2,.6,0);scene.add(cs);
+    var mast=new T.Mesh(new T.CylinderGeometry(.15,.2,9,6),uMat);mast.position.y=6.5;scene.add(mast);
+    for(k=0;k<4;k++){a=k/4*TAU;var pn=new T.Mesh(new T.BoxGeometry(.22,2,1.2),uAnt);pn.position.set(Math.cos(a)*.6,10.4,Math.sin(a)*.6);pn.rotation.y=-a;scene.add(pn);}
+    var domeMat=B.basic('signal',{opacity:0,wireframe:true,depthWrite:false});
+    scene.add(new T.Mesh(new T.SphereGeometry(80,40,14,0,TAU,0,Math.PI/2),domeMat));
+    var shells=[];for(k=0;k<3;k++){var shm=B.basic('signal',{opacity:0,side:T.DoubleSide,depthWrite:false});var sh=new T.Mesh(new T.SphereGeometry(1,32,12,0,TAU,0,Math.PI/2),shm);sh.position.y=10.4;scene.add(sh);shells.push({m:sh,mat:shm});}
+
+    /* sensors */
+    var sMat=B.basic('text',{opacity:0}),sAcc=B.basic('signal',{opacity:0});
+    var sensors=[{n:'Radar',p:new V3(-40,0,-6)},{n:'Câmera',p:new V3(38,0,-14)},{n:'Sensor acústico',p:new V3(-22,0,30)},{n:'Detector de RF',p:new V3(24,0,30)}];
+    sensors.forEach(function(s,q){
+      var g=new T.Group();g.position.copy(s.p);scene.add(g);
+      var pole=new T.Mesh(new T.CylinderGeometry(.12,.16,7,6),sMat);pole.position.y=3.5;g.add(pole);
+      var head;
+      if(q===0){head=new T.Mesh(new T.BoxGeometry(2.6,1.4,.25),sAcc);}
+      else if(q===1){head=new T.Mesh(new T.BoxGeometry(1,1,2),sMat);var lens=new T.Mesh(new T.CylinderGeometry(.35,.35,.6,10),sAcc);lens.rotation.x=Math.PI/2;lens.position.z=1.2;head.add(lens);}
+      else if(q===2){head=new T.Mesh(new T.SphereGeometry(.8,12,8),sAcc);}
+      else{head=new T.Mesh(new T.ConeGeometry(.5,2,8),sAcc);}
+      head.position.y=7.4;g.add(head);s.head=head;s.top=new V3(s.p.x,7.4,s.p.z);
+      s.lm=B.lineMat('signal',true);s.line=B.line([new V3(),new V3(0,1,0)],s.lm);
+      if(q>=2){s.rm=B.basic('signal',{opacity:0,side:T.DoubleSide,depthWrite:false});s.ring=new T.Mesh(new T.RingGeometry(.9,1,40),s.rm);s.ring.position.copy(s.top);scene.add(s.ring);}
+      B.mkLabel(s.n,'',new V3(s.p.x,10.5,s.p.z),'sens');
+    });
+
+    /* drones */
+    var bodyG=new T.BoxGeometry(1.6,.45,1.6),rotorG=new T.RingGeometry(.35,.8,18,1,0,4.2);
+    var armPts=[new V3(-1.6,0,-1.6),new V3(1.6,0,1.6),new V3(-1.6,0,1.6),new V3(1.6,0,-1.6)];
+    var bracketPts=[new V3(-3,-3,0),new V3(3,-3,0),new V3(3,3,0),new V3(-3,3,0)];
+    function makeDrone(){
+      var g=new T.Group(),m=B.basic('text',{opacity:0}),am=B.lineMat('text');
+      g.add(new T.Mesh(bodyG,m));g.add(new T.LineSegments(new T.BufferGeometry().setFromPoints(armPts),am));
+      var rotors=[];[[-1.6,-1.6],[1.6,1.6],[-1.6,1.6],[1.6,-1.6]].forEach(function(c){var r=new T.Mesh(rotorG,m);r.rotation.x=-Math.PI/2;r.position.set(c[0],.2,c[1]);g.add(r);rotors.push(r);});
+      g.scale.setScalar(1.5);scene.add(g);
+      var bm=B.lineMat('signal'),br=new T.LineLoop(new T.BufferGeometry().setFromPoints(bracketPts),bm);br.frustumCulled=false;scene.add(br);
+      return {g:g,m:m,am:am,rotors:rotors,br:br,bm:bm};
+    }
+    var lead={s:new V3(150,26,72),e:new V3(36,17,16),op:new V3(178,0,96),fate:0};
+    var swarm=[],b0=new V3(-165,30,-70),b1=new V3(-52,22,-18);
+    var dv=new V3().subVectors(b1,b0).normalize(),side=new V3(-dv.z,0,dv.x);
+    for(i=0;i<12;i++){var row=Math.floor((i+1)/2),sg=i===0?0:(i%2?1:-1);var off=new V3().addScaledVector(side,sg*row*5).addScaledVector(dv,-row*4.5);off.y=(i%3)*2-2;
+      swarm.push({s:b0.clone().add(off),e:b1.clone().add(off),op:new V3(-190,0,-95),fate:i%2});}
+    var all=[lead].concat(swarm);
+    all.forEach(function(d,q){d.o=makeDrone();d.k=q;d.pos=new V3();d.lm=B.lineMat('muted',true);d.link=B.line([new V3(),new V3(0,1,0)],d.lm);});
+    var opMat=B.basic('muted',{opacity:0}),opG=new T.CylinderGeometry(.8,.8,2.4,10);
+    var op1=new T.Mesh(opG,opMat);op1.position.set(178,1.2,96);scene.add(op1);
+    var op2=new T.Mesh(opG,opMat.clone());op2.position.set(-190,1.2,-95);scene.add(op2);B.tint(op2.material,'muted');
+    var cT=B.col('text'),cM=B.col('muted');B.themeFns.push(function(){cT=B.col('text');cM=B.col('muted');});
+
+    /* labels */
+    B.mkLabel('Área protegida','is-strong',new V3(-44,11,0),'venue');
+    B.mkLabel('DRONEBlocker','is-signal',new V3(0,13,0),'venue');
+    B.mkLabel('Escudo de bloqueio 360°','is-signal',new V3(56,58,0),'dome');
+    var leadP=new V3(),swP=new V3(),landP=new V3(),retP=new V3();
+    B.mkLabel('Drone não autorizado','is-signal',leadP,'leadL');
+    B.mkLabel('Enxame · 12 drones','is-signal',swP,'swarmL');
+    B.mkLabel('Operador','',new V3(178,4,96),'opL');
+    B.mkLabel('Operador','',new V3(-190,4,-95),'opS');
+    B.mkLabel('Pouso controlado','is-strong',landP,'out');
+    B.mkLabel('Retorno ao ponto de origem','is-strong',retP,'out');
+    B.keyVal=function(k){
+      var nE=smooth(S.neut);
+      switch(k){
+        case 'venue':return S.venue;
+        case 'dome':return S.dome*(1-S.lead*.7);
+        case 'sens':return S.sens*(1-S.swarm*.8);
+        case 'leadL':return clamp01((S.lead-.4)/.4)*(1-S.swarm)*(1-nE);
+        case 'swarmL':return clamp01(S.swarm*2-1)*(1-nE);
+        case 'opL':return clamp01(S.lead*3)*(1-S.jam)*(1-S.swarm*.6);
+        case 'opS':return clamp01(S.swarm*3)*(1-S.jam);
+        case 'out':return clamp01(S.neut*2-1);
+      }
+      return 0;
+    };
+
+    B.update=function(){
+      B.orbitCam(S,S.tx,S.ty,S.tz);
+      var cam=B.camera,nE=smooth(S.neut);
+      groundMat.opacity=.5*S.ground;vMat.opacity=S.venue*.8;vMat2.opacity=S.venue*.4;
+      uMat.opacity=S.venue;uEdge.opacity=S.venue;uAnt.opacity=S.venue;
+      domeMat.opacity=S.dome*.12+S.jam*.05;
+      shells.forEach(function(s,q){var f=(B.clock*.32+q/3)%1;s.m.scale.setScalar(4+f*80);s.mat.opacity=(1-f)*.14*S.jam;});
+      all.forEach(function(d){
+        var a2=d===lead?S.lead:S.swarm,vis=a2>.005?Math.min(1,a2*4):0;
+        d.pos.lerpVectors(d.s,d.e,smooth(a2));
+        var landed=0;
+        if(d.fate===0){d.pos.y+=(1.2-d.pos.y)*nE;landed=nE;}
+        else{d.pos.lerpVectors(d.e,d.s,nE*.8);d.pos.y+=nE*6;vis*=1-clamp01((nE-.75)/.25);}
+        d.pos.y+=Math.sin(B.clock*2+d.k)*.35*(1-landed);
+        d.o.g.position.copy(d.pos);d.o.g.rotation.y=d.k*.7+(d.fate?nE*Math.PI:0);
+        d.o.m.opacity=vis;d.o.am.opacity=vis*.9;
+        d.o.m.color.copy(cT).lerp(cM,nE);d.o.am.color.copy(cT).lerp(cM,nE);
+        var spin=(1-landed)*.92+.08;d.o.rotors.forEach(function(r,q){r.rotation.z=B.clock*16*spin*(q%2?1:-1);});
+        var lockA=(d===lead?S.sens:S.lock)*(1-nE*.85)*vis;
+        d.o.bm.opacity=lockA;d.o.br.position.copy(d.pos);d.o.br.quaternion.copy(cam.quaternion);d.o.br.scale.setScalar(1+.12*Math.sin(B.clock*5+d.k));
+        var jam=smooth(S.jam*1.15);
+        d.lm.opacity=.5*vis*(1-jam)*(S.jam>.01?(.5+.5*Math.sin(B.clock*45+d.k)):1);
+        B.setLine(d.link,d.op,d.pos);
+      });
+      var leadVis=clamp01(S.lead*3),swVis=clamp01(S.swarm*3);
+      opMat.opacity=leadVis*.8;op2.material.opacity=swVis*.8;
+      sMat.opacity=S.sens;sAcc.opacity=S.sens;
+      sensors.forEach(function(s,q){
+        s.lm.opacity=.7*S.sens*(1-nE)*(1-S.swarm*.6)*leadVis;B.setLine(s.line,s.top,lead.pos);
+        if(q===0){s.head.rotation.y=B.clock*2.2;}
+        if(q===1){s.head.lookAt(lead.pos);}
+        if(s.ring){var f=(B.clock*.8+q*.5)%1;s.ring.quaternion.copy(cam.quaternion);s.ring.scale.setScalar(1+f*8);s.rm.opacity=(1-f)*.6*S.sens;}
+      });
+      leadP.copy(lead.pos);leadP.y+=5;swP.copy(swarm[0].pos);swP.y+=7;
+      landP.copy(lead.pos);landP.y+=5;retP.copy(swarm[1].pos);retP.y+=6;
+    };
+
+    if(!reduce){ST.create({trigger:B.host,start:'top 75%',once:true,onEnter:function(){G.to(S,{ground:1,venue:1,duration:2.4,ease:'power2.out'});}});}
+    function build(){
+      var P=B.prepTimeline(),tl=P.tl;
+      tl.to(S,{dome:1,duration:.8},0).to(S,{orb:1.5,dist:105,h:50,duration:.9,ease:'sine.inOut'},0).to(P.rails[0],{scaleY:1,duration:.9},0);
+      P.count(0,.1,.8);
+      P.swap(0,1,.9);
+      tl.to(S,{tx:40,ty:12,tz:22,orb:1.0,dist:85,h:26,duration:2.2,ease:'power2.inOut'},.9)
+        .to(S,{lead:1,duration:1.8},.9).to(S,{sens:1,duration:.8},1.9).to(P.legend,{autoAlpha:1,duration:.5},2)
+        .to(P.rails[1],{scaleY:1,duration:2.4},.9);
+      P.swap(1,2,3.4);
+      tl.to(S,{tx:-35,ty:14,tz:-8,orb:1.95,dist:120,h:48,duration:2.2,ease:'power2.inOut'},3.4)
+        .to(S,{swarm:1,duration:2.2},3.4).to(S,{lock:1,duration:.8},5).to(P.rails[2],{scaleY:1,duration:3.2},3.4);
+      P.count(1,4,1);
+      P.swap(2,3,6.8);
+      tl.to(S,{tx:0,ty:8,tz:0,orb:1.4,dist:150,h:72,duration:2,ease:'power2.inOut'},6.8)
+        .to(S,{jam:1,duration:.8},6.9).to(S,{neut:1,duration:1.8},7.7)
+        .to(S,{orb:2.1,duration:1.6,ease:'sine.inOut'},8.8)
+        .to(P.rails[3],{scaleY:1,duration:3.6},6.8).to({},{duration:.4},10.4);
+      return tl;
+    }
+    function staticView(){
+      S.ground=1;S.venue=1;S.dome=1;S.lead=1;S.sens=1;S.swarm=1;S.lock=1;S.jam=1;S.neut=1;
+      S.tx=0;S.ty=8;S.tz=0;S.orb=1.6;S.dist=150;S.h=72;
+      B.finalCounters();B.size();B.render();
+    }
+    B.start();
+    return {build:build,staticView:staticView};
+  }
 
   function initRmt3D(){
     var host=$('#rmt3d'),cv=$('#rmtCanvas'),lh=$('#rmtLabels'),T=window.THREE;

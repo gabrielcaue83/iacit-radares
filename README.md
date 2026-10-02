@@ -9,6 +9,8 @@ Conteúdo baseado nas informações públicas de [iacit.com.br](https://www.iaci
 - Rolagem horizontal fixada com os quatro mercados da IACIT
 - **Radar OTH 0100 em 3D**: costa gaúcha, setor de 120°, curvatura da Terra e navios sem AIS, tudo conduzido pelo scroll
 - **Radar RMT 0200 em 3D**: radome, varredura volumétrica de 600 km, dupla polarização H/V e classificação de hidrometeoros
+- **DME 0200 em 3D**: pulsos de interrogação e resposta, posição DME/DME por cruzamento de distâncias e rota PBN sem GNSS
+- **DRONEBlocker em 3D**: escudo de 360°, detecção multissensor, enxame de drones e bloqueio com pouso controlado ou retorno ao ponto de origem
 - Portfólio filtrável com prévia que segue o cursor
 - Linha do tempo com ano fixo e efeito de embaralhamento
 - Tema claro e escuro, layout responsivo e suporte a movimento reduzido
